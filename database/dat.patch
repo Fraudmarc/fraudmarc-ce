@@ -1,0 +1,61 @@
+diff --git a/glide.yaml b/glide.yaml
+index 39fb24d..c7457b7 100644
+--- a/glide.yaml
++++ b/glide.yaml
+@@ -20,3 +20,5 @@ import:
+   subpackages:
+   - assert
+ - package: github.com/mgutz/logxi
++  subpackages:
++  - v1
+diff --git a/init.go b/init.go
+index 64fef6a..8b2b55c 100644
+--- a/init.go
++++ b/init.go
+@@ -4,7 +4,7 @@ import (
+ 	"fmt"
+ 	"strconv"
+
+-	"github.com/mgutz/logxi"
++	logxi "github.com/mgutz/logxi/v1"
+ )
+
+ var logger logxi.Logger
+diff --git a/kvs/init.go b/kvs/init.go
+index 6b74716..04045f6 100644
+--- a/kvs/init.go
++++ b/kvs/init.go
+@@ -1,6 +1,6 @@
+ package kvs
+
+-import "github.com/mgutz/logxi"
++import logxi "github.com/mgutz/logxi/v1"
+
+ var logger logxi.Logger
+
+diff --git a/sqlx-runner/init.go b/sqlx-runner/init.go
+index 7f1cdc9..d338f2c 100644
+--- a/sqlx-runner/init.go
++++ b/sqlx-runner/init.go
+@@ -5,7 +5,7 @@ import (
+ 	"time"
+
+ 	"github.com/cenkalti/backoff"
+-	"github.com/mgutz/logxi"
++	logxi "github.com/mgutz/logxi/v1"
+ 	"gopkg.in/mgutz/dat.v1"
+ 	"gopkg.in/mgutz/dat.v1/kvs"
+ 	"gopkg.in/mgutz/dat.v1/postgres"
+
+diff --git a/sqlx-runner/exec.go b/sqlx-runner/exec.go
+index 46639ef..c523c8e 100644
+--- a/sqlx-runner/exec.go
++++ b/sqlx-runner/exec.go
+@@ -718,5 +718,6 @@ func (ex *Execer) queryObject(dest interface{}) error {
+
+ // uuid generates a UUID.
+ func uuid() string {
+-	return fmt.Sprintf("%s", guid.NewV4())
++	theid, _ := guid.NewV4()
++	return fmt.Sprintf("%s", theid)
+ }

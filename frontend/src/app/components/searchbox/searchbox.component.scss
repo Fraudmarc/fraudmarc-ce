@@ -1,0 +1,36 @@
+:host {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-radius: 0 !important;
+    height: 50px;
+}
+
+:host>div {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: row;
+    align-content: start center;
+    background-color: white;
+}
+
+:host>div>button {
+    flex: 0 0 auto;
+    border-radius: 0;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+}
+
+input {
+    border: none;
+    flex: 1 0 auto;
+    align-self: stretch;
+    font-size: 20px;
+    font-weight: inherit;
+    margin: 8px 8px 8px 16px;
+}
+
+input:focus {
+    outline: none;
+}

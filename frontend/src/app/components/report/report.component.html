@@ -1,0 +1,115 @@
+<app-page-header [title]="domain" [subtitle]="subtitle" action="Back" (onaction)="toDomains()" style="margin-bottom: 20px;">
+</app-page-header>
+<br>
+<ng-container *ngIf="hasDate">
+  <mat-card class="range-container">
+    <fm-date-range [start]=start [end]="end" (onDateRange)="setDateRange($event)"></fm-date-range>
+  </mat-card>
+  <fm-progress-panel *ngIf="chartLoading"></fm-progress-panel>
+  <mat-card *ngIf="hasError">
+    <mat-error>
+      <h3>{{errorMessage}}</h3>
+    </mat-error>
+  </mat-card>
+  <ng-container *ngIf="!hasError">
+    <mat-card *ngIf="!chartLoading && !hasChart">
+      <h3>No Records Found for this query {{domain}}</h3>
+    </mat-card>
+    <mat-card class="chart-container" *ngIf="hasChart">
+      <div style="height: 300px" *ngIf="hasChart">
+        <line-chart class="chart-container" [scheme]="colorScheme" [results]="ChartDmarcResponse?.chartdata" [gradient]="false" [xAxis]="true"
+          [yAxis]="true" [showXAxisLabel]="false" [showYAxisLabel]="false" [autoScale]="true" [showGridLines]="true" [timeline]="true">
+        </line-chart>
+      </div>
+      <mat-table [dataSource]="totalDataSource" [ngStyle.xs]="{'font-size' : '11px'}" *ngIf="hasMessages">
+        <ng-container matColumnDef="sourceIP">
+          <mat-header-cell *matHeaderCellDef>
+            <strong></strong>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <strong>{{domain}}</strong>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="messages">
+          <mat-header-cell *matHeaderCellDef>Total</mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{element.message_count | number}} </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="percentage">
+          <mat-header-cell *matHeaderCellDef>Passing %</mat-header-cell>
+          
+          <mat-cell *matCellDef="let element">{{((element.spf_aligned_count + element.dkim_aligned_count - element.fully_aligned_count) *100/ element.message_count).toFixed(0)
+            | number}} </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="full">
+          <mat-header-cell *matHeaderCellDef>
+            Pass
+            <br fxHide.gt-xs> Both</mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{element.fully_aligned_count | number}} </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="spf">
+          <mat-header-cell *matHeaderCellDef>
+            Pass
+            <br fxHide.gt-xs>SPF</mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{element.spf_aligned_count | number}} </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="dkim">
+          <mat-header-cell *matHeaderCellDef>Pass
+            <br fxHide.gt-xs>Dkim</mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{element.dkim_aligned_count | number}} </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="['sourceIP','messages','percentage', 'full','spf','dkim']"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: ['sourceIP','messages','percentage','full','spf','dkim'];"></mat-row>
+      </mat-table>
+    </mat-card>
+    <fm-progress-panel *ngIf="reportLoading"></fm-progress-panel>
+    <div *ngIf="hasMessages" class="report-content" [hidden]="!hasMessages">
+      <div class="mat-elevation-z3" #summary>
+        <mat-paginator #pager [pageSize]="pageSize" [pageSizeOptions]="[25, 50, 100]">
+        </mat-paginator>
+        <mat-table [dataSource]="summaryDataSource" [ngStyle.xs]="{'font-size' : '11px'}">
+          <ng-container matColumnDef="sourceIP">
+            <mat-header-cell *matHeaderCellDef>Source</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <strong [style.color]="element.spf_aligned_count + element.dkim_aligned_count === 0 ? '#B71C1C' : '' ">
+                {{element.source}}
+              </strong>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="messages">
+            <mat-header-cell *matHeaderCellDef>Total</mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.total_count | number}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="percentage">
+            <mat-header-cell *matHeaderCellDef>Passing %</mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{((element.spf_aligned_count + element.dkim_aligned_count - element.fully_aligned_count)*100 / element.total_count).toFixed(0)
+              | number}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="full">
+            <mat-header-cell *matHeaderCellDef>Pass
+              <br fxHide.gt-xs> Both</mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.fully_aligned_count | number}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="spf">
+            <mat-header-cell *matHeaderCellDef>Pass
+              <br fxHide.gt-xs>SPF</mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.spf_aligned_count | number}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="dkim">
+            <mat-header-cell *matHeaderCellDef>Pass
+              <br fxHide.gt-xs>Dkim</mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.dkim_aligned_count | number}} </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="[ 'sourceIP', 'messages','percentage', 'full', 'spf', 'dkim'] "></mat-header-row>
+          <mat-row *matRowDef="let  row; let i=index; columns: [ 'sourceIP', 'messages', 'percentage', 'full', 'spf', 'dkim'];" class="clickable helloworld"
+            (click)="onRowClick($event, row, i ) "></mat-row>
+        </mat-table>
+        <div style="text-align: right">
+          <button mat-button (click)="toTop(summary)" color="primary">
+            To Top
+            <mat-icon>vertical_align_top</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>

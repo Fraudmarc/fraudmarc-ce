@@ -1,0 +1,29 @@
+<div #container
+     (mouseenter)="raise()"
+     (mouseleave)="lower()">
+  <input #search
+         type="text"
+         (focus)="hasFocus = true"
+         (blur)="hasFocus = false"
+         (keyup.enter)="submit()"
+         [formControl]="searchControl"
+         [placeholder]="placeholder" />
+  <div style="width:80px"
+       fxLayout="row"
+       fxLayoutAlign="end center"
+       fxLayoutGap="10px">
+    <button mat-icon-button
+            
+            (click)="clear()">
+      <mat-icon>clear</mat-icon>
+    </button>
+    <span fxFlex="1 0 auto" *ngIf="icon !== ''"></span>
+    <button mat-icon-button
+            *ngIf="icon !== ''"
+            [disabled]="searchDisabled"
+            (click)="submit()"
+            [color]="color">
+      <mat-icon>{{icon}}</mat-icon>
+    </button>
+  </div>
+</div>

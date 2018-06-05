@@ -1,0 +1,16 @@
+h1#page-title {
+  color: mat-contrast($candy-app-primary, 500);
+  background-color: mat-color($candy-app-primary);
+  font-size: 30px;
+  font-weight: 300;
+  margin: -32px -32px 32px -32px;
+  padding: 50px;
+}
+
+code {
+  background-color: white;
+  display: block;
+  line-height: 140%;
+  margin-bottom: 15px;
+  padding: 15px;
+}

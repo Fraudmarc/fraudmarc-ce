@@ -1,0 +1,5 @@
+{
+  "name": "process",
+  "description": "Process DMARC Reports with IP Intelligence",
+  "memory": 128
+}

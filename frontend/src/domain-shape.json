@@ -1,0 +1,47 @@
+/* response to GET: "/app/domains"*/
+
+{
+  "domain_list": [
+    {
+      "name":"domain.com",
+      "status" : "new | inactive | active" /* new if not yet configured */
+      /* Other applicable properties*/
+    }
+    /* Other domains */
+  ]
+}
+
+/* response to GET: "/app/domains/{domain}"  (Full package)*/
+
+{
+  "domain_list": [
+    {
+      "name":"domain.com",
+      "status" : "new | inactive | active" /* new if not in users list */
+      /* Other applicable properties ie SPF/DMARC etc.*/
+    }
+  ]
+}
+
+/* response to GET: "/app/domains/{domain}/status" (just the status... no use leaking info)*/
+{
+  "domain_list": [
+    {
+      "name":"domain.com",
+      "status" : "new | inactive | active" /* new if not in users list */
+    }
+  ]
+}
+
+/* sent to POST: "/app/domain/{domain}"*/
+
+{
+  "name": "domain.com"
+}
+
+/* sent to PUT: "/app/domain/{domain}"*/
+
+{
+  "name": "domain.com",
+  /* Properties to update */
+}

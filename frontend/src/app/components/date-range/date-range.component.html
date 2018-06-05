@@ -1,0 +1,30 @@
+<div [className]=" inset ? 'inset' : ''">
+  <mat-form-field>
+    <input matInput
+           [matDatepicker]="startrange"
+           [(ngModel)]="start"
+           placeholder="Start Date"
+           [max]="maxStart()">
+    <mat-datepicker-toggle matSuffix
+                           [for]="startrange"></mat-datepicker-toggle>
+    <mat-datepicker #startrange></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput
+           [matDatepicker]="endrange"
+           [(ngModel)]="end"
+           placeholder="End Date"
+           [min]="minStart()"
+           [max]="maxEnd()">
+    <mat-datepicker-toggle matSuffix
+                           [for]="endrange"></mat-datepicker-toggle>
+    <mat-datepicker #endrange></mat-datepicker>
+  </mat-form-field>
+  <button mat-icon-button
+          class="search"
+          color="primary"
+          (click)="setRange()"
+          matTooltip="Filter Dates">
+    <mat-icon>search</mat-icon>
+  </button>
+</div>

@@ -1,0 +1,217 @@
+<section class="mat-typography">
+  <div class="header">
+    <div class="maintitle">{{dataProvider.domain}}</div>
+    <div class="subtitle">{{dataProvider.source}} - {{dateRange}}</div>
+    <button mat-icon-button
+            mat-dialog-close
+            tab-index="-1">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div class="table">
+    <fm-progress-panel *ngIf="loading"></fm-progress-panel>
+
+    <mat-paginator #pager
+                   *ngIf="!loading"
+                   [pageSizeOptions]="[50, 100, 200]">
+    </mat-paginator>
+
+    <div *ngIf="!loading"
+         class="table-container">
+      <div class="horizontal-scroll">
+        <mat-table class="table-header"
+                   [dataSource]="voidDataSource">
+          <ng-container matColumnDef="source_ip">
+            <mat-header-cell *matHeaderCellDef>Source</mat-header-cell>
+            <mat-cell *matCellDef="let element"></mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="country">
+            <mat-header-cell *matHeaderCellDef>Co.</mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.country | dashWhenEmptyString}} </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="message_count">
+            <mat-header-cell *matHeaderCellDef>Count</mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.message_count | number}} </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="disposition">
+            <mat-header-cell *matHeaderCellDef>Disp.</mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.disposition === 'quarantine' ? 'quar.' : element.disposition}} </mat-cell>
+          </ng-container>>
+
+          <ng-container matColumnDef="eval_dkim">
+            <mat-header-cell *matHeaderCellDef>DKIM</mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.eval_dkim}} </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="eval_spf">
+            <mat-header-cell *matHeaderCellDef>SPF</mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.eval_spf}} </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="auth_spf">
+            <mat-header-cell *matHeaderCellDef>SPF
+              <br>Auth.</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <div>{{element.auth_spf_result | dashWhenEmptyString}}</div>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="auth_spf_domain">
+            <mat-header-cell *matHeaderCellDef>SPF
+              <br>Domain</mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.auth_spf_domain | dashWhenEmptyString}} </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="auth_dkim_domain">
+            <mat-header-cell *matHeaderCellDef>DKIM
+              <br>Domain</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <div *ngFor="let dkimDomain of element.auth_dkim_domain">{{dkimDomain | dashWhenEmptyString}}</div>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="auth_dkim_selector">
+            <mat-header-cell *matHeaderCellDef>DKIM
+              <br>Selector</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <div *ngFor="let dkimSelector of element.auth_dkim_selector">{{dkimSelector | dashWhenEmptyString}}</div>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="auth_dkim_result">
+            <mat-header-cell *matHeaderCellDef>DKIM
+              <br>Results</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <div *ngFor="let dkimResult of element.auth_dkim_result">{{dkimResult | dashWhenEmptyString}}</div>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="po_reason">
+            <mat-header-cell *matHeaderCellDef>Policy
+              <br>Overide</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <div *ngFor="let po_reason of element.po_reason">{{po_reason | dashWhenEmptyString}}</div>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="po_comment">
+            <mat-header-cell *matHeaderCellDef>Overide
+              <br>Reason</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <div *ngFor="let po_comment of element.po_comment">{{po_comment | dashWhenEmptyString}}</div>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="detailColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: detailColumns;"></mat-row>
+        </mat-table>
+        <div class="vertical-scroll">
+          <mat-table [dataSource]="detailDataProvider"
+                     style="font-size: 10px;">
+            <ng-container matColumnDef="source_ip">
+              <mat-header-cell *matHeaderCellDef>Source</mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.source_ip}} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="country">
+              <mat-header-cell *matHeaderCellDef
+                               matTooltip="Country"
+                               matTooltipPosition="above">Co.</mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <img src="assets/img/blank.gif"
+                     class="flag"
+                     [ngClass]="'flag-' + element.country.toLowerCase()"
+                     [title]="getName(element.country)"
+                     [alt]="element.country" />
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="message_count">
+              <mat-header-cell *matHeaderCellDef>Count</mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.message_count | number}} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="disposition">
+              <mat-header-cell *matHeaderCellDef>Disp.</mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.disposition === 'quarantine' ? 'quar.' : element.disposition}} </mat-cell>
+            </ng-container>>
+
+            <ng-container matColumnDef="eval_dkim">
+              <mat-header-cell *matHeaderCellDef>DKIM</mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.eval_dkim}} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="eval_spf">
+              <mat-header-cell *matHeaderCellDef>SPF</mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.eval_spf}} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="auth_spf">
+              <mat-header-cell *matHeaderCellDef>SPF
+                <br>Auth.</mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <div>{{element.auth_spf_result | dashWhenEmptyString}}</div>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="auth_spf_domain">
+              <mat-header-cell *matHeaderCellDef>SPF
+                <br>Domain</mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.auth_spf_domain | dashWhenEmptyString}} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="auth_dkim_domain">
+              <mat-header-cell *matHeaderCellDef>DKIM
+                <br>Domain</mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <div *ngFor="let dkimDomain of element.auth_dkim_domain">{{dkimDomain | dashWhenEmptyString}}</div>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="auth_dkim_selector">
+              <mat-header-cell *matHeaderCellDef>DKIM
+                <br>Selector</mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <div *ngFor="let dkimSelector of element.auth_dkim_selector">{{dkimSelector | dashWhenEmptyString}}</div>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="auth_dkim_result">
+              <mat-header-cell *matHeaderCellDef>DKIM
+                <br>Results</mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <div *ngFor="let dkimResult of element.auth_dkim_result">{{dkimResult | dashWhenEmptyString}}</div>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="po_reason">
+              <mat-header-cell *matHeaderCellDef>Policy
+                <br>Overide</mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <div *ngFor="let po_reason of element.po_reason">{{po_reason | dashWhenEmptyString}}</div>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="po_comment">
+              <mat-header-cell *matHeaderCellDef>Overide
+                <br>Reason</mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <div *ngFor="let po_comment of element.po_comment">{{po_comment | dashWhenEmptyString}}</div>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row style="display: none"
+                            *matHeaderRowDef="detailColumns"></mat-header-row>
+
+            <mat-row (click)="onRowClick($event, row, i )"
+                     *matRowDef="let row; let i=index; columns: detailColumns;"></mat-row>
+          </mat-table>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</section>

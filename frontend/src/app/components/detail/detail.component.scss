@@ -1,0 +1,143 @@
+section {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .header {
+    height: 72px;
+    background-color: #1b5e20;
+    color: white;
+    padding: 10px 10px 10px 15px;
+  }
+  
+  .maintitle {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  
+  .subtitle {
+    font-size: 14px;
+  }
+  
+  .table {
+    height: calc(100% - 72px);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .table > fm-progress-panel {
+    flex: 1 0 auto;
+  }
+  
+  .table > .mat-paginator {
+    flex: 0 0 auto;
+  }
+  
+  [mat-dialog-close] {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+  }
+  
+  .table-container {
+    position: relative;
+    overflow-y: hidden;
+    font-size: 10px;
+    flex: 1 0;
+  }
+  
+  .horizontal-scroll {
+    position: relative;
+    height: 100%;
+    width: 100px;
+    min-width: 1280px;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .vertical-scroll {
+    flex: 1 0;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width: 1260px;
+  }
+  
+  .table-header {
+    flex: 0 0;
+  }
+  
+  .mat-cell {
+    font-size: 1.2em;
+  }
+  
+  .mat-header-cell {
+    font-size: 1.2em;
+  }
+  
+  .mat-column-source_ip {
+    flex: 0 0 180px;
+  }
+  
+  .mat-column-country {
+    flex: 0 0 40px;
+    text-align: center;
+  }
+  
+  .mat-column-message_count {
+    flex: 0 0 65px;
+  }
+  
+  .mat-column-disposition {
+    flex: 0 0 50px;
+    text-align: center;
+  }
+  
+  .mat-column-eval_spf {
+    flex: 0 0 50px;
+    text-align: center;
+  }
+  
+  .mat-column-auth_spf {
+    flex: 0 0 50px;
+    text-align: center;
+  }
+  
+  .mat-column-auth_spf_domain {
+    flex: 0 0 185px;
+  }
+  
+  .mat-column-eval_dkim {
+    flex: 0 0 50px;
+    text-align: center;
+  }
+  
+  .mat-column-auth_dkim_domain {
+    flex: 0 0 185px;
+  }
+  
+  .mat-column-auth_dkim_selector {
+    flex: 0 0 185px;
+  }
+  
+  .mat-column-auth_dkim_result {
+    flex: 0 0 50px;
+    padding-right: 5px;
+  }
+  
+  .mat-column-po_reason {
+    flex: 0 0 80px;
+    text-align: left;
+  }
+  
+  .mat-column-po_comment {
+    flex: 0 0 80px;
+    text-align: left;
+  }
+  
+  .mat-row:hover {
+    background-color: lightgray;
+  }

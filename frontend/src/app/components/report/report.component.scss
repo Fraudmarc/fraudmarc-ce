@@ -1,0 +1,85 @@
+.report-content {
+    width: 100%;
+}
+
+.range-container {
+    padding-top: 17.5px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    display:flex;
+    justify-content: space-between;
+}
+.mat-paginator {
+    border-bottom: 1px solid rgba(0,0,0,.51);
+}
+.chart-container {
+    padding: 0;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+::ng-deep svg {
+    max-height: 300px !important;
+}
+::ng-deep .mat-paginator-page-size {
+    margin: 0;
+  }
+  
+  ::ng-deep .mat-paginator-range-label {
+    margin: 0 6px 0 15px !important;
+  }
+
+.mat-column-sourceIP {
+    flex: 3 0;
+    font-size: 1em;
+    text-align: left;
+}
+.mat-column-messages,
+.mat-column-full,
+.mat-column-spf,
+.mat-column-dkim,
+.mat-column-percentage {
+    flex: 2 0;
+    font-size: 1em;
+    text-align: right;
+}
+
+.mat-card.filter {
+    padding: 6px 24px 0px 24px;
+    margin-bottom: 10px;
+}
+
+.radio-group {
+    display: inline-flex;
+    flex-direction: row;
+}
+
+.radio-button {
+    margin: 5px;
+}
+
+.spf-alignment-selected-value {
+    margin: 15px 0;
+}
+
+#tableView {
+    width: 100%;
+    overflow-x: scroll;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+[hidden] {
+    height: 0;
+}
+
+.mat-row:hover {
+    background-color: lightgray;
+}
+
+.reportSettings {
+    float: right; 
+    font-size: 40px; 
+}

@@ -1,0 +1,137 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+html,
+body {
+    margin: 0;
+    box-sizing: border-box;
+    background-color: #FAFAFA;
+}
+
+body * {
+    box-sizing: inherit;
+}
+
+.mat-dialog-container {
+    position: relative;
+}
+
+.mat-divider.section {
+    margin: 10px 0;
+}
+
+.fm-greeting {
+    margin-right: 2em;
+    margin-bottom: .5em;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    font-size: 1.8em;
+    line-height: 1.1em;
+    font-weight: 300;
+    color: #95a5a6;
+    /* MD Concrete */
+}
+
+.fm-header {
+    margin-right: 2em;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    font-size: 2.5em;
+    line-height: 1em;
+    font-weight: 300;
+    color: #7f8c8d;
+    /* MD Asbestos */
+}
+
+
+/* move to JobComponent */
+
+.fm-step-container {
+    position: relative
+}
+
+.fm-thumb {
+    max-height: 60vh;
+}
+
+mat-divider.section {
+    margin: 10px 0;
+    border-top-width: 2px;
+}
+
+
+/* START Fixes for Bug in Material2 v2.0.0-beta.12*/
+
+.mat-raised-button.mat-primary,
+.mat-raised-button.mat-accent {
+    color: white !important;
+}
+
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+    border-color: #4caf50 !important;
+}
+
+.mat-radio-button.mat-accent .mat-radio-inner-circle {
+    background-color: #4caf50 !important;
+}
+
+
+/* END Fixes for Bug in Material2 v2.0.0-beta.12 */
+
+
+/* START Fixes for Bug in Material2 v2.0.0-beta.12*/
+
+text {
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    font-size: 10px;
+}
+
+[dense] div.mat-list-item-content {
+    padding: 0 !important;
+}
+
+.mat-tooltip {
+    white-space: pre-line !important;
+}
+
+.mat-tab-link {
+    min-width: auto !important;
+    padding: 0 8px !important;
+}
+
+.mat-snack-bar-container.bk-red {
+    background-color: #E64A19 !important;
+    color: #FFFFFF;
+}
+
+.mat-snack-bar-container.snack-error {
+    background-color: #E64A19 !important;
+    color: #FFFFFF;
+}
+
+.mat-snack-bar-container.snack-warn {
+    background-color: #FFB300 !important;
+    color: #000000;
+}
+
+.mat-snack-bar-container.snack-success {
+    background-color: #43A047 !important;
+    color: #FFFFFF;
+}
+
+.no-pad {
+    padding: 0 !important;
+}
+
+.sourceDetail .mat-dialog-container {
+    padding: 0;
+}
+
+.right-aligned-header > .mat-content {
+    justify-content: space-between;
+}
+
+
+
+.mat-expansion-panel-header-title, 
+.mat-expansion-panel-header-description {
+  flex-basis: 0;
+}

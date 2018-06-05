@@ -1,0 +1,37 @@
+<div fxLayout="column" fxLayoutAlign="start stretch">
+    <app-page-header title="Domains" [subtitle]="user">
+    </app-page-header>
+
+    <div fxLayout="row" fxLayout.lt-md="column-reverse" fxLayoutAlign="start space-between" fxLayoutGap="10px" fxFlex="0 0 auto"
+        style="margin-top: 10px; position:relative;">
+
+        <app-searchbox (valueChange)="onFilter($event)" [ngStyle.lt-md]="{'width': '100%'}" color="primary" placeholder="Search your domains"
+            icon="search" fxFlex="1 1 auto" [(value)]="filterText">
+        </app-searchbox>
+    </div>
+    <mat-divider class="section"></mat-divider>
+    <div fxFlex #list>
+        <fm-progress-panel *ngIf="loading"></fm-progress-panel>
+        <h4 *ngIf="domainList.length === 0  && !loading">
+            <span>No Domains. Get started by adding a domain.</span>
+        </h4>
+        <mat-grid-list [cols]="columnCount$ | async" [rowHeight]="gridRowHeight" gutterSize="10px"
+            #mat>
+            <mat-grid-tile class="mat-elevation-z1" *ngFor="let domain of domainList" (click)="goReport(domain)" style="cursor: pointer">
+                <div class="domain-tile mat-elevation-z3">
+                    <mat-icon matTooltipPosition="above" [matTooltip]="domain" [ngStyle]="">
+                        security
+                    </mat-icon>
+                    <span [class]="domain_title">
+                        {{domain}}
+                    </span>
+                    <span class="actions">
+                        <button mat-icon-button (click)="goReport(domain)" title="DMARC Report">
+                            <mat-icon>assessment</mat-icon>
+                        </button>
+                    </span>
+                </div>
+            </mat-grid-tile>
+        </mat-grid-list>
+    </div>
+</div>

@@ -13,7 +13,7 @@
 
 Fraudmarc CE is a secure and scalable system to analyze DMARC data. It is designed for government agencies that must adhere to strict data control policies.
 
-*Our [DMARC service](https://www.fraudmar.com/plans/) provides an easier way businesses to manage email authentication.*
+*Fraudmarc's [DMARC service](https://www.fraudmar.com/plans/) provides an easier way for businesses to manage email authentication.*
 
 ## Unlock your DMARC data
 

@@ -1,24 +1,32 @@
 <img src="25Fraudmarc-CE-Logo-on-Light.png" alt="logo">
 
-# User Guide for Fraudmarc Community Edition :fire: :fire: :fire:
+# Installation Guide for Fraudmarc Community Edition :fire: :fire: :fire:
 
-### Install GOLANG:thumbsup:
+Here are the steps to setup Fraudmarc CE to collect and process DMARC data for your domain(s). 
 
-Follow the [Go Installation Steps](https://golang.org/doc/install) to install Go on your machine, and set the `GOPATH` via this [link](https://github.com/golang/go/wiki/SettingGOPATH)
+1. Create a PostgreSQL Database
+2. Create an AWS role for Fraudmarc CE
+3. Install Go
+4. Install Git
+5. Build & deploy AWS Lambda functions to process DMARC reports
+6. Configure AWS SES to receive DMARC reports & invoke our Lambda for processing
+7. Build & run the Fraudmace CE client
+8. Publish a DMARC policy to collect reports
 
-> You may want to export the path to `.bashrc` file
+## System overview
 
-### Install Git:thumbsup:
+![IDiagram](https://github.com/Fraudmarc/fraudmarc-ce/blob/master/diagram2.png)
 
-1. Follow the link to install [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) , and configure the Git by checking this [link](https://help.github.com/articles/setting-your-username-in-git/).
 
-2. After installing the Git, you can use commands:arrow_down: to clone the fraudmarc CE project to your local machine:
+## Let's get started
 
-   ```shell
-   go get github.com/fraudmarc/fraudmarc-CE
-   ```
+**Want DMARC data without complex cloud infrastructure? Try our [hosted DMARC service](https://www.fraudmar.com/plans/).**
 
 ### Set Up Your Database:thumbsup:
+
+Instructions are for creating the database in AWS RDS. You are welcome to use any other PostgreSQL database server.
+
+*If you need maximum security, use a private VPC for your RDS instance and Lambdas. Such configuration is beyond the scope of this document.* 
 
 1. Set up a RDS PostgreSQL database via [AWS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_GettingStarted.CreatingConnecting.PostgreSQL.html) instruction
 
@@ -93,6 +101,24 @@ Follow the [Go Installation Steps](https://golang.org/doc/install) to install Go
        "role": "arn:aws:iam::[AccountID]:role/FraudmarcCE"
    }
    ```
+
+### Install GOLANG:thumbsup:
+
+Follow the [Go Installation Steps](https://golang.org/doc/install) to install Go on your machine, and set the `GOPATH` via this [link](https://github.com/golang/go/wiki/SettingGOPATH)
+
+> You may want to export the path to `.bashrc` file
+
+### Install Git:thumbsup:
+
+1. Follow the link to install [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) , and configure the Git by checking this [link](https://help.github.com/articles/setting-your-username-in-git/).
+
+2. After installing the Git, you can use commands:arrow_down: to clone the fraudmarc CE project to your local machine:
+
+   ```shell
+   go get github.com/fraudmarc/fraudmarc-ce
+   ```
+
+
 
 ### Deploy Your Lambda Function:thumbsup:
 

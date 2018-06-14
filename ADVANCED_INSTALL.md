@@ -4,13 +4,14 @@
 
 Here are the steps to setup Fraudmarc CE to collect and process DMARC data for your domain(s). 
 
-1. Create AWS role for Fraudmarc CE
-2. Create a PostgreSQL Database
-3. Setup Docker
-4. Deploy Lambda functions to process DMARC reports with Docker Hub
-5. Configure AWS SES to receive DMARC reports & invoke our Lambdas for processing
-6. Run the Fraudmarc CE client with Docker
-7. Publish a DMARC policy to collect reports
+1. Create a PostgreSQL Database
+2. Create an AWS role for Fraudmarc CE
+3. Install Go
+4. Install Git
+5. Build & deploy AWS Lambda functions to process DMARC reports
+6. Configure AWS SES to receive DMARC reports & invoke our Lambda for processing
+7. Build & run the Fraudmace CE client
+8. Publish a DMARC policy to collect reports
 
 ## System overview
 
@@ -21,26 +22,9 @@ Here are the steps to setup Fraudmarc CE to collect and process DMARC data for y
 
 **Want DMARC data without complex cloud infrastructure? Try our [hosted DMARC service](https://www.fraudmarc.com/plans/).**
 
-### 1. Create AWS Role for Fraudmarc CE👍
+### Set Up Your Database:thumbsup:
 
-**This installation guide is aimed for users who want to process DMARC reports quickly. If you want to setup SES, S3 bucket, RDS instance, Lambda functions yourself, follow [this guide](). Otherwise, please understand that in order for you to setup the Fraudmarc CE with the minimum amount of effort, you need to grant certain permissions for us to setup the different AWS services for you.**
-
-1. Go to AWS IAM panel, and click the Roles on the left. Create a role for Fraudmarc CE lambda functions. 
-
-2. Select AWS Service, and click lambda function.
-
-3. Check the box net to the `AmazonS3ReadOnlyAccess` and  `CloudWatchLogsFullAccess` permissions.
-
-4. Set the Role name to `FraudmarcCE` and Create role.
-
-5. Click on the role you just created to see the Role ARN in the form like `arn:aws:iam::<AccountID>:role/fraudmarcce`. Copy this ARN to the existing role field in the installer/env.list (don't be confused with the env.list in the root directory!) ⬇️
-
-   ```
-   AWS_ROLE_ARN=`arn:aws:iam::<AccountID>:role/fraudmarcce
-   ```
-### 2. Set Up Your Database:thumbsup:
-
-Instructions for creating the database in AWS RDS. You are welcome to use any other PostgreSQL database server.
+Instructions are for creating the database in AWS RDS. You are welcome to use any other PostgreSQL database server.
 
 *If you need maximum security, use a private VPC for your RDS instance and Lambdas. Such configuration is beyond the scope of this document.* 
 
@@ -54,7 +38,7 @@ Instructions for creating the database in AWS RDS. You are welcome to use any ot
 
 2. After you launch the DB instance, you need to wait a few minutes for it to completely setup (check the `DB instance status` in the Summary panel). 
 
-3. If you have already configured your AWS account jump to `Step 3`. Otherwise, find your instance's `Availability zone` (i.e.  `us-east-1`). Create a new file named `config` under `~/.aws`, and the content should be as such:
+3. If you have already configured your AWS account jump to `Step 4`. Otherwise, find your instance's `Availability zone` (i.e.  `us-east-1`). Create a new file named `config` under `~/.aws`, and the content should be as such:
 
    ```
    [default]
@@ -63,7 +47,7 @@ Instructions for creating the database in AWS RDS. You are welcome to use any ot
 
 4. Choose the instance you just created, scroll down to Security group rule, and click the `Inbound` tab at the bottom of the new window.
 
-5. Click the `Edit` button, and click the `Add rule` button. Give the Port Range the same with the previous one, and Source should be `Anywhere` from the drop down.
+5. Click the `Edit` button, and click the `Add rule` button. Give the Port Range the same with the previous one, and Source should be `Anywhere`
 
 6. Install the [PSQL](<https://www.postgresql.org/download/>) command line tool on your local machine.
 
@@ -74,7 +58,22 @@ Instructions for creating the database in AWS RDS. You are welcome to use any ot
    pg_restore --no-privileges --no-owner -v -h [endpoint of instance] -U [master username] -n public -d [new database name (not instance name)] fraudmarcce
    ```
 
-8. Go to RDS panel and choose the Instances on the left panel. Choose the `fraudmarcce` instance you just created. Copy the `DB name`, `Username`, `Endpoint` to the `env.list` file in the project repository root directory like:arrow_down:
+8. Go to RDS panel and choose the Instances on the left panel. Choose the `fraudmarcce` instance you just created. Copy the `DB name`, `Username`, `Endpoint` to the `project.json` file in project repository like:arrow_down:
+
+   ```json
+   ...
+   "environment": {
+       "REPORTING_DB_NAME": "[DB name]",
+       "REPORTING_DB_USER": "[Username]",
+       "REPORTING_DB_PASSWORD": "[password]",
+       "REPORTING_DB_HOST": "[Endpoint]",
+       "REPORTING_DB_SSL": "require",
+       "REPORTING_DB_MAX_TIME": "180s",
+   },
+   ...
+   ```
+
+9. Copy the information in Step 5 to the env.list in the project repository like:arrow_down:
 
    ```
    # Set to match your environment
@@ -85,6 +84,42 @@ Instructions for creating the database in AWS RDS. You are welcome to use any ot
    REPORTING_DB_SSL=require
    REPORTING_DB_MAX_TIME=180s
    ```
+
+### Creat AWS Role for Fraudmarc CE👍
+
+1. Go to AWS IAM panel, and click the Roles on the left. Create a role for fraudmarc CE lambda functions.
+
+2. Select AWS Service, and click lambda function.
+
+3. Check the box net to the `AmazonS3ReadOnlyAccess` and  `CloudWatchLogsFullAccess` permissions.
+
+4. Set the Role name to `FraudmarcCE` and Create role.
+
+5. Click on the role you just created to see the Role ARN in the form like `arn:aws:iam::<AccountID>:role/fraudmarcce`. Copy this ARN to the existing role field in project.json in the project repository like ⬇️
+
+   ```json
+   {
+       "role": "arn:aws:iam::[AccountID]:role/FraudmarcCE"
+   }
+   ```
+
+### Install GOLANG:thumbsup:
+
+Follow the [Go Installation Steps](https://golang.org/doc/install) to install Go on your machine, and set the `GOPATH` via this [link](https://github.com/golang/go/wiki/SettingGOPATH)
+
+> You may want to export the path to `.bashrc` file
+
+### Install Git:thumbsup:
+
+1. Follow the link to install [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) , and configure the Git by checking this [link](https://help.github.com/articles/setting-your-username-in-git/).
+
+2. After installing the Git, you can use commands:arrow_down: to clone the fraudmarc CE project to your local machine:
+
+   ```shell
+   go get github.com/fraudmarc/fraudmarc-ce
+   ```
+
+
 
 ### Deploy Your Lambda Function:thumbsup:
 

@@ -29,7 +29,6 @@ export class FooterComponent implements OnInit {
       this.ChartDmarcResponse = res;
     })
   }
-  // ${environment.APIBASEURL}/domains
 
   testDomainList() { 
     this.dmarcService.getDomainList().subscribe(res =>{

@@ -46,7 +46,6 @@ export class SearchboxComponent implements OnInit {
       this.hasValue = value.length > 0;
       this.ourValue = value;
       this.valueChange.emit(value);
-      // console.log('value change detected in searchbox');
     });
     // Capture Mouse Over Events
     this.renderer.listen(this.searchBox.nativeElement, 'mouseover', () => this.raise());
@@ -69,7 +68,6 @@ export class SearchboxComponent implements OnInit {
   }
 
   submit() {
-    //  console.log('searchbox submit() called');
     this.onSubmit.emit(this.searchControl.value); }
 
   clear() { this.searchControl.setValue(''); }

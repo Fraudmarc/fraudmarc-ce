@@ -52,10 +52,7 @@ export class DetailComponent implements OnInit {
     this.dataProvider.onData.subscribe(() => {
       this.loading = false;
       this.detailDataProvider = this.dataProvider.DetailDataSource;
-      // console.log(this.detailDataProvider);
     });
-    // this.loading = false;
-    // this.detailDataProvider = this.dataProvider.DetailDataSource;
     this.dateRange = `${this.datePipe.transform(this.dataProvider.startDate, 'shortDate')} to ${this.datePipe.transform(this.dataProvider.endDate, 'shortDate')}`;
   }
 

@@ -176,7 +176,6 @@ export class DmarcService {
         })
       .subscribe(
         (data: any) => {
-          // console.log(data);
           if (data.errorMessage) { dataProvider.onError.emit(data.errorMessage); }
           dataProvider.DetailDataSource.data = data.detail_rows;
         },

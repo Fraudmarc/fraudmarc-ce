@@ -30,30 +30,31 @@ Instructions are for creating the database in AWS RDS. You are welcome to use an
 
 1. Set up a RDS PostgreSQL database via [AWS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_GettingStarted.CreatingConnecting.PostgreSQL.html) instruction
 
-   1. Go go AWS RDS panel and click the region on the upper right corner, and choose one of the following based on your position: `US East N.V`, `EU (Ireland)`, `US West (OR)`.
+   1. Go to AWS RDS panel and click the region on the upper right corner, and choose one of the following based on your position: `US East N.V`, `EU (Ireland)`, `US West (OR)`.
    2. Go to AWS RDS panel and click Instances on the left panel, and click Launch DB instance
-   3. Through the creating process, you need to choose PostgreSQL, Dev/Test Use case, give DB instance class based on your DMARC report volume, fill the DB instance identifier, master username and password.
+   3. Through the creating process, you need to choose PostgreSQL, decide the DB instance class based on your DMARC report volume, and fill the DB instance identifier, master username and password.
    4. Set Public accessibility to Yes.
    5. Set the name of Database to `fraudmarcce`
 
-2. After you create the DB instance, you need to wait a few minutes for it to accomplish. 
+2. After you launch the DB instance, you need to wait a few minutes for it to completely setup (check the `DB instance status` in the Summary panel). 
 
-3. If you already configure the AWS account before, update your `config` file in `~/.aws`and jump to Step4, or you need to find your instance `Availability zone` and the string below without the last letter is your region. Create a new file named `configure` under `~/.aws`, and the content should be like:
+3. If you have already configured your AWS account jump to `Step 4`. Otherwise, find your instance's `Availability zone` (i.e.  `us-east-1`). Create a new file named `config` under `~/.aws`, and the content should be as such:
 
    ```
    [default]
    region=[your region]
    ```
 
-4. Choose the instance you just created, and scroll down to Security group rule, click the inbound rule tab.
+4. Choose the instance you just created, scroll down to Security group rule, and click the `Inbound` tab at the bottom of the new window.
 
-5. Click the `Edit` button on the bottom, and click the `Add rule` button. Give the Port Range the same with the previous one, and Source should be `Anywhere`
+5. Click the `Edit` button, and click the `Add rule` button. Give the Port Range the same with the previous one, and Source should be `Anywhere`
 
 6. Install the [PSQL](<https://www.postgresql.org/download/>) command line tool on your local machine.
 
-7. Import the FraudmarcCE schema into your new database with the command (You can find your endpoint on your RDS instance panel) :arrow_down:
+7. Import the Fraudmarc CE schema into your new database with the command (You can find your endpoint on your RDS instance panel) below: 
 
    ```shell
+   cd /path/to/fraudmarc-ce
    pg_restore --no-privileges --no-owner -v -h [endpoint of instance] -U [master username] -n public -d [new database name (not instance name)] fraudmarcce
    ```
 
@@ -84,7 +85,7 @@ Instructions are for creating the database in AWS RDS. You are welcome to use an
    REPORTING_DB_MAX_TIME=180s
    ```
 
-### Creat AWS Role for FraudmarcCE👍
+### Creat AWS Role for Fraudmarc CE👍
 
 1. Go to AWS IAM panel, and click the Roles on the left. Create a role for fraudmarc CE lambda functions.
 
@@ -201,7 +202,7 @@ Follow the [Go Installation Steps](https://golang.org/doc/install) to install Go
 
 2. Choose the Rule Sets on the left panel. If you are new to AWS, create a Receipt Rule. If you have existing rules, create a new rule.
 
-3. Give the email address that the DMARC Report will be sent to (`dmarc@fraudmarc-ce.<your domain name>`), and click Next Step.
+3. Enter the email address that the DMARC Report will be sent to (`dmarc@fraudmarc-ce.<your domain name>`), and click Next Step.
 
 4. Add action with type S3, and create a S3 bucket with a globally unique name.
 
@@ -216,9 +217,9 @@ Follow the [Go Installation Steps](https://golang.org/doc/install) to install Go
    },
    ```
 
-### Run The FraudmarcCE Docker:thumbsup:
+### Run The Fraudmarc CE Docker:thumbsup:
 
-We've simplified the client side of FraudmarcCE by providing a single Docker to provide both the Angular frontend  and Go backend.
+We've simplified the client side of Fraudmarc CE by providing a single Docker to provide both the Angular frontend  and Go backend.
 
 1. Run the command to update docker:
 
@@ -226,11 +227,11 @@ We've simplified the client side of FraudmarcCE by providing a single Docker to 
    sudo apt install docker.io
    ```
 
-2. If the following commands prompts permission denied error on your computer, you may need `sudo` priviledge.
+2. If the following commands prompts permission denied error on your computer, you may need `sudo` privilege.
 
-3. Navigate to the directory containing the FraudmarcCE docker image.
+3. Navigate to the directory containing the Fraudmarc CE docker image.
 
-4. Run the command to download and set up dependancies. This process may takes several minutes
+4. Run the command to download and set up dependencies. This process may take several minutes
 
    ```shell
    docker build -t fraudmarc-ce .
@@ -242,7 +243,7 @@ We've simplified the client side of FraudmarcCE by providing a single Docker to 
    docker run -it --env-file env.list -p 7489:7489 fraudmarc-ce
    ```
 
-6. Your FraudmarcCE installtion is now ready at [http://localhost:7489](http://localhost:7489).
+6. Your Fraudmarc CE installation is now ready at [http://localhost:7489](http://localhost:7489).
 
 ### Create a DMARC policy:thumbsup:
 

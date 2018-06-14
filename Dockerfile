@@ -12,8 +12,9 @@ WORKDIR /frontend
 COPY /frontend .
 RUN $(npm bin)/ng build --prod
 
-FROM golang as backend
-RUN apt-get update -y && apt-get install patch -y
+FROM golang:alpine as backend
+RUN apk -Uuv add git && \
+	rm /var/cache/apk/*
 RUN (go get -d gopkg.in/mgutz/dat.v1 ; exit 0)
 COPY /database/dat.patch /
 WORKDIR $GOPATH/src/gopkg.in/mgutz/dat.v1
@@ -21,17 +22,9 @@ RUN patch -p1 < /dat.patch
 COPY /backend/server /server
 WORKDIR /server
 RUN go get \
-    github.com/aws/aws-sdk-go/aws \
-    github.com/aws/aws-sdk-go/aws/credentials \
-    github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds \
-    github.com/aws/aws-sdk-go/aws/session \
-    github.com/aws/aws-sdk-go/service/lambda \
-    github.com/aws/aws-sdk-go/service/sns \
     github.com/fraudmarc/fraudmarc-ce/backend/lib \
     github.com/fraudmarc/fraudmarc-ce/database \
-    github.com/gorilla/mux \
-    github.com/lib/pq \
-    golang.org/x/net/publicsuffix
+    github.com/gorilla/mux
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o fraudmarc-ce .
 
 FROM scratch

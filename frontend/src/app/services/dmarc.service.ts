@@ -1,19 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { EventEmitter, Injectable, Pipe, PipeTransform } from '@angular/core';
-import { Observable, of, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { MatTableDataSource } from '@angular/material';
-import { fakeChartData, fakeDomainlist, fakeSummaryData, fakeDetailData} from './fakeData';
 
 export class DomainDmarcDataProvider {
   public onData = new EventEmitter<void>();
   public onError = new EventEmitter<string>();
   public totalDataSource = new MatTableDataSource<IDMARCReportTotalRecord>();
   public summaryDataSource = new MatTableDataSource<IDMARCReportSummaryRecord>();
-  public pageIndex: number;
-  public pageSize: number;
-  public scrollY: number;
-  public rowMarker: number;
 
   constructor(
     public domain: string,
@@ -139,24 +134,14 @@ export class DmarcService {
       this.ChartDmarcResponse.chartdata[0].series[j].name = new Date(this.ChartDmarcResponse.chartdata[0].series[j].name);
       this.ChartDmarcResponse.chartdata[1].series[j].name = new Date(this.ChartDmarcResponse.chartdata[1].series[j].name);
     }
-    // console.log(this.ChartDmarcResponse);
     data.next(this.ChartDmarcResponse);
       }, err => console.log(err)
     );
     return data.asObservable();
-    // this.ChartDmarcResponse = fakeChartData;
-    // for (let j = 0; j < this.ChartDmarcResponse.chartdata[0].series.length; j++) {
-    //   this.ChartDmarcResponse.chartdata[0].series[j].name = new Date(this.ChartDmarcResponse.chartdata[0].series[j].name);
-    //   this.ChartDmarcResponse.chartdata[1].series[j].name = new Date(this.ChartDmarcResponse.chartdata[1].series[j].name);
-    // }
-    // return of(this.ChartDmarcResponse);
   }
 
   getDomainList() {
     return this.http.get(`${environment.apiBaseUrl}/domains/`);
-    // return of(fakeDomainlist);
-
-
   }
 
   getSummaryDataProvider(domain: string, startDate: ISODateString, endDate: ISODateString) {
@@ -165,8 +150,6 @@ export class DmarcService {
       .get(`${environment.apiBaseUrl}/domains/${domain}/report`, { params: { start: startDate, end: endDate } })
       .subscribe(
         (data: IDMARCReportResponse) => {
-          // console.log(data.domain_summary_counts);
-          // console.log(data.summary);
           if (data.errorMessage) { dataProvider.onError.emit(data.errorMessage); }
           dataProvider.totalDataSource.data = [data.domain_summary_counts];
           dataProvider.summaryDataSource.data = data.summary;
@@ -175,10 +158,6 @@ export class DmarcService {
         err => dataProvider.onError.emit('There was a problem processing this request'),
         () => dataProvider.onData.emit()
       );
-    // const data = fakeSummaryData;
-    // dataProvider.totalDataSource.data = [data.domain_summary_counts];
-    // dataProvider.summaryDataSource.data = data.summary;
-    // dataProvider.domain = data.domain;
     return dataProvider;
   }
 
@@ -197,7 +176,6 @@ export class DmarcService {
         })
       .subscribe(
         (data: any) => {
-          // console.log(data);
           if (data.errorMessage) { dataProvider.onError.emit(data.errorMessage); }
           dataProvider.DetailDataSource.data = data.detail_rows;
         },
@@ -206,7 +184,6 @@ export class DmarcService {
         },
         () => dataProvider.onData.emit()
       );
-    // dataProvider.DetailDataSource.data = fakeDetailData.detail_rows;
     return dataProvider;
   }
 }

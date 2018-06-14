@@ -20,7 +20,7 @@ Here are the steps to setup Fraudmarc CE to collect and process DMARC data for y
 
 ## Let's get started
 
-**Want DMARC data without complex cloud infrastructure? Try our [hosted DMARC service](https://www.fraudmar.com/plans/).**
+**Want DMARC data without complex cloud infrastructure? Try our [hosted DMARC service](https://www.fraudmarc.com/plans/).**
 
 ### Set Up Your Database:thumbsup:
 
@@ -219,7 +219,7 @@ Follow the [Go Installation Steps](https://golang.org/doc/install) to install Go
 
 ### Run The Fraudmarc CE Docker:thumbsup:
 
-We've simplified the client side of Fraudmarc CE by providing a single Docker to provide both the Angular frontend  and Go backed.
+We've simplified the client side of Fraudmarc CE by providing a single Docker to provide both the Angular frontend  and Go backend.
 
 1. Run the command to update docker:
 

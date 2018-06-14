@@ -109,12 +109,10 @@ export class ReportComponent implements OnInit {
         this.startDate,
         this.endDate
       );
-      // console.log(this.summaryDataProvider);
 
       this.dmarcService
         .getChartData(domain, this.startDate, this.endDate)
         .subscribe(result => {
-          // console.log(result);
           this.chartLoading = false;
           this.ChartDmarcResponse = result;
           if (this.ChartDmarcResponse.chartdata[0].series.length) {
@@ -126,18 +124,6 @@ export class ReportComponent implements OnInit {
         this.hasError = true;
         this.errorMessage = err;
       });
-
-      // this.summaryDataProvider.onData.subscribe(() => {
-      //   this.totalDataSource = this.summaryDataProvider.totalDataSource;
-      //   this.totalDataSource.connect().subscribe(totals => {
-      //     this.reportLoading = false;
-      //     if (totals[0].message_count > 0) {
-      //       this.hasMessages = true;
-      //     }
-      //     this.domain = this.summaryDataProvider.domain;
-      //   });
-      //   this.summaryDataSource = this.summaryDataProvider.summaryDataSource;
-      // });
 
       this.totalDataSource = this.summaryDataProvider.totalDataSource;
       this.totalDataSource.connect().subscribe(totals => {

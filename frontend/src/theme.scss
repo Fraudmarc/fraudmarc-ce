@@ -1,7 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import '~@angular/material/theming';
-@import '~angular-mgl-timeline/theme.scss';
 @import '~@swimlane/ngx-datatable/release/index.css';
 @import '~@swimlane/ngx-datatable/release/themes/material.css';
 @import '~@swimlane/ngx-datatable/release/assets/icons.css';
@@ -31,7 +30,6 @@ $candy-app-theme: mat-light-theme($candy-app-primary, $candy-app-accent, $candy-
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 @include angular-material-theme($candy-app-theme);
-@include mgl-timeline-theme($candy-app-theme);
 
 //@include covalent-theme($candy-app-theme);
 

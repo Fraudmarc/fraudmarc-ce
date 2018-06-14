@@ -1,4 +1,4 @@
-![FraudmarcCE Logo](https://github.com/Fraudmarc/fraudmarc-ce/blob/master/25Fraudmarc-CE-Logo-on-Light.png)
+![Fraudmarc CE Logo](https://github.com/Fraudmarc/fraudmarc-ce/blob/master/25Fraudmarc-CE-Logo-on-Light.png)
 
 - **Built for government agencies**
 - **100%** Control of your data

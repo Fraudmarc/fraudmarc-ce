@@ -3,7 +3,7 @@
     "description": "Fraudmarc Community Edition DMARC Reporting",
     "memory": 128,
     "timeout": 300,
-    "role": "[ARN of FraudmarcCE role]",
+    "role": "[ARN of Fraudmarc CE role]",
     "environment": {
         "REPORTING_DB_NAME": "[DB name]",
         "REPORTING_DB_USER": "[Username]",
@@ -13,7 +13,7 @@
         "REPORTING_DB_MAX_TIME": "180s",
         "BUCKET_NAME": "[S3 bucket name]",
         "DRE_TABLE" : "dmarc_reporting_entries",
-        "ArnLambdaDmarcARResolveBulk": "[AWS ARN of FraudmarcCE_process lambda]",
+        "ArnLambdaDmarcARResolveBulk": "[AWS ARN of Fraudmarc CE_process lambda]",
         "ARRTable": "AggregateReportRecord",
         "ARTable": "AggregateReport"
     },

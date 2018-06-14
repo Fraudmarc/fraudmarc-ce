@@ -3,7 +3,6 @@ import { EventEmitter, Injectable, Pipe, PipeTransform } from '@angular/core';
 import { Observable, of, Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { MatTableDataSource } from '@angular/material';
-import { fakeChartData, fakeDomainlist, fakeSummaryData, fakeDetailData} from './fakeData';
 
 export class DomainDmarcDataProvider {
   public onData = new EventEmitter<void>();

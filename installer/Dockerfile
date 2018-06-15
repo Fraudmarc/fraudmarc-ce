@@ -1,7 +1,12 @@
 # - - build (from parent directory)
 # docker build -t fraudmarc-ce-install -f installer/Dockerfile .
+
 # - - run
 # docker run -it --env-file env.list --env-file installer/env.list fraudmarc-ce-install
+
+# OR run pre-built image from public repository https://hub.docker.com/r/fraudmarc/fraudmarc-ce-install/:
+# docker run -it --env-file env.list --env-file installer/env.list fraudmarc/fraudmarc-ce-install
+
 # - - stop & remove all of your docker images in case you wasted a lot of space
 # docker stop $(docker ps -a -q); docker rm $(docker ps -a -q); docker rmi -f $(docker images -q); docker images
 
@@ -32,7 +37,12 @@ RUN apk -Uuv add python py-pip jq && \
 	apk --purge -v del py-pip && \
 	rm /var/cache/apk/*
 COPY --from=builder /fraudmarc-ce-receive.zip /fraudmarc-ce-process.zip /
-CMD aws lambda create-function \
+COPY /installer/lambda-assume-policy.json / 
+CMD export AWS_ROLE_ARN=$(aws iam create-role --role-name FraudmarcCE --assume-role-policy-document file:///lambda-assume-policy.json \
+    | jq ".Role.Arn" | tr -d "\"") && echo $AWS_ROLE_ARN && sleep 5 \
+    && aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess --role-name FraudmarcCE \
+    && aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/CloudWatchLogsFullAccess --role-name FraudmarcCE \
+    && aws lambda create-function \
     --region $AWS_DEFAULT_REGION \
     --function-name fraudmarc-ce-process \
     --memory 128 \
@@ -77,4 +87,24 @@ CMD aws lambda create-function \
         }" \
         --runtime go1.x \
         --zip-file fileb://fraudmarc-ce-receive.zip \
-        --handler receive
+        --handler receive \
+        | jq ".FunctionArn" | xargs -I {} \
+        echo \
+          '{                                                                 \
+              "Version": "2012-10-17",                                      \
+              "Statement": [                                                \
+                  {                                                         \
+                      "Sid": "VisualEditor0",                               \
+                      "Effect": "Allow",                                    \
+                      "Action": [                                           \
+                          "lambda:InvokeFunction",                          \
+                          "lambda:InvokeAsync"                              \
+                      ],                                                    \
+                      "Resource": {}  \
+                  }                                                         \
+              ]                                                             \
+          }'                                                                 \
+          > inlinePolicy.json && cat inlinePolicy.json \
+        && aws iam put-role-policy --role-name FraudmarcCE --policy-name invokeProcessLambda --policy-document file:///inlinePolicy.json \
+        && cat inlinePolicy.json | jq ".Statement[0].Resource" | tr -d "\"" | xargs -I {} \
+        echo {}

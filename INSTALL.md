@@ -21,9 +21,49 @@ Here are the steps to setup Fraudmarc CE to collect and process DMARC data for y
 
 **Want DMARC data without complex cloud infrastructure? Try our [hosted DMARC service](https://www.fraudmarc.com/plans/).**
 
-### 1. Create AWS Role for Fraudmarc CE👍
+### 1. Create AWS Group and User for Fraudmarc CE👍
+**This installation guide is aimed for users who want to process DMARC reports quickly and easily. If you want to setup SES, S3 bucket, RDS instance, Lambda functions yourself, follow [this guide](). Otherwise, please understand that in order for you to setup the Fraudmarc CE with the minimum amount of effort, you need to grant us with certain permissions in order to setup the different AWS services for you.**
+*Before proceeding the install guide, create an AWS account!*
+We will first start with creating an AWS Group and adding a User to the group that will be used to setup the AWS services automatically.
 
-**This installation guide is aimed for users who want to process DMARC reports quickly. If you want to setup SES, S3 bucket, RDS instance, Lambda functions yourself, follow [this guide](). Otherwise, please understand that in order for you to setup the Fraudmarc CE with the minimum amount of effort, you need to grant certain permissions for us to setup the different AWS services for you.**
+1. Go to the IAM service in the AWS Console. In the left nav bar, click `Groups` and `Create New Group`. You can name the group however you like. Proceed to `Next Step`.
+
+2. Using the filter, search and click the checkbox next to the following policies:
+* AmazonRDSFullAccess (grants access to create DB instance for you)
+* AWSLambdaFullAccess (grants access to create Lambda Functions for you)
+* IAMFullAccess (grants access to create Roles, and add policies for you)
+* AmazonS3FullAccess (grants access to create S3 bucket for you)
+* AmazonSESFullAccess (grants access to setup SES that will receive DMARC reports)
+* CloudWatchLogsFullAccess (not used in setup, but you can use it to find problems/bugs)
+
+*you can check our Dockerfiles in our `root` directory and in `/installer/` to see what we actually do with these privileges. We are only using these to help you setup your Fraudmarc CE, and if in doubt, you can perform the installation steps yourself*
+
+3. Review and `Create Group`
+
+4. Go to the `Users` tab and `Add user`. You can name the user however you like (i.e. fraudmarc-ce-installer). Click on the `programmatic access` in `Access type` and click `Next:Permissions`.
+
+5. Inside the `Add user to group` box, check the box next to the new group you created and proceed to `Next:Review`. After reviewing, click `Create user`.
+
+6. You will now see values inside `Access key ID` and `Secret access key`. Copy those values into the `/installer/env.list` file as such:
+
+```
+...
+AWS_ACCESS_KEY_ID=YOURACCESSKEY
+AWS_SECRET_ACCESS_KEY=YourSecretKey
+...
+```
+7. Choose a name for your S3 Bucket(needs to be a globally unique name) that will receive DMARC report emails from SES, and enter the name into `/installer/env.list` as such:
+
+```
+...
+BUCKET_NAME=My-Globally-Unique-Bucket-Name
+...
+```
+This is needed for us to deploy your lambda functions.
+
+8. Hooray! The hard part is done :)
+
+### 1. Create AWS Role for Fraudmarc CE👍
 
 1. Go to AWS IAM panel, and click the Roles on the left. Create a role for Fraudmarc CE lambda functions. 
 
@@ -38,7 +78,8 @@ Here are the steps to setup Fraudmarc CE to collect and process DMARC data for y
    ```
    AWS_ROLE_ARN=`arn:aws:iam::<AccountID>:role/fraudmarcce
    ```
-### 2. Set Up Your Database:thumbsup:
+
+### 2. Setup Your Database:thumbsup:
 
 Instructions for creating the database in AWS RDS. You are welcome to use any other PostgreSQL database server.
 
@@ -86,80 +127,29 @@ Instructions for creating the database in AWS RDS. You are welcome to use any ot
    REPORTING_DB_MAX_TIME=180s
    ```
 
-### Deploy Your Lambda Function:thumbsup:
-
-1. If you use macOS, Linux, or OpenBSD, run the command:arrow_down: to install CURL on your computer:
-
-   ```shell
-   sudo apt install curl
-   ```
-
-2. Follow the [APEX](http://apex.run/) instructions to install apex.
-
-3. Follow the [AWS Credentials](https://docs.aws.amazon.com/general/latest/gr/managing-aws-access-keys.html) to generate access key and ID.
-
-   1. If you have never configured AWS credentials before, create an `~/.aws` directory and a `credentials` file under that directory containing:
-
-   ```
-   [default]
-   aws_access_key_id=[access key]
-   aws_secret_access_key=[secret key]
-   ```
-
-   1. If you have previously created credentials, add the new ones to your existing file.
-
-4. Run the following commands to install dependencies:arrow_down:
+### 3. Setup Docker and Pull Install Docker Image
+This step runs the fraudmarc-ce-install image, which using the given Role ARN and AWS credentials, deploys the Lambda functions that are needed to retrieve and process the DMARC reports from the S3 bucket and update the Postgres Database.
+1. Run the command to update docker:
 
    ```shell
-   go get github.com/fraudmarc/fraudmarc-ce/backend/lib \
-          github.com/fraudmarc/fraudmarc-ce/database
-   (go get -d gopkg.in/mgutz/dat.v1 ; exit 0)
-   cd $GOPATH/src/gopkg.in/mgutz/dat.v1
-   patch -p1 < $GOPATH/src/github.com/fraudmarc/fraudmarc-ce/database/dat.patch
-   cd $GOPATH/src/github.com/fraudmarc/fraudmarc-ce
-   go get ./...
-   ```   
+   sudo apt install docker.io
+   ```
+2. Run Docker Image from Docker Hub
+*If the following commands prompts permission denied error on your computer, you may need `sudo` privilege.*
 
-5. Build and deploy the two lambda functions
+You are able to run the install Docker image from the Docker Hub public repository, or you can build it from scratch using our Dockerfile in the `installer` directory.
 
+* run Docker image from public repo:
     ```shell
-    apex deploy
+    docker run -it --env-file env.list --env-file installer/env.list fraudmarc/fraudmarc-ce-install
+    ```
+* build and run Docker image from /installer/Dockerfile:
+    ```shell
+    docker build -t fraudmarc-ce-install -f installer/Dockerfile .
+    docker run -it --env-file env.list --env-file installer/env.list fraudmarc-ce-install
     ```
 
-6. Go to AWS Console lambda function and copy the process function's ARN. Open `project.json` in the code, change
-
-   ```json
-   {
-   	"ArnLambdaDmarcARResolveBulk": "***YOUR PROCESS LAMBDA FUNCTION ARN***"
-   }
-   ```
-
-7. Go to AWS IAM panel, click on the role you just created and choose Add inline policy at the lower right corner. Click the JSON, replace the content with⬇️
-
-   ```json
-   {
-       "Version": "2012-10-17",
-       "Statement": [
-           {
-               "Sid": "VisualEditor0",
-               "Effect": "Allow",
-               "Action": [
-                   "lambda:InvokeFunction",
-                   "lambda:InvokeAsync"
-               ],
-               "Resource": "***YOUR PROCESS LAMBDA FUNCTION ARN***"
-           }
-       ]
-   }
-   ```
-
-8. Re-deploy the lambdas with the updated configuration that to point to the correct endpoint.
-
-    ```shell
-    apex deploy
-    ```
-
-### Set Up Your AWS Simple Email Service (SES):thumbsup:
+### 4. Setup Your AWS Simple Email Service (SES):thumbsup:
 
 1. In AWS SES, choose the Domain on the left side, and click Verify a New Domain. Enter  `fraudmarc-ce.<your domain name>`. Your DMARC Reports will be delievered here. Follow the instructions to setup the Domain Verification Record and Email Receiving Record to complete the verification.
 
@@ -185,14 +175,6 @@ Instructions for creating the database in AWS RDS. You are welcome to use any ot
 ### Run The Fraudmarc CE Docker:thumbsup:
 
 We've simplified the client side of Fraudmarc CE by providing a single Docker to provide both the Angular frontend  and Go backend.
-
-1. Run the command to update docker:
-
-   ```shell
-   sudo apt install docker.io
-   ```
-
-2. If the following commands prompts permission denied error on your computer, you may need `sudo` privilege.
 
 3. Navigate to the directory containing the Fraudmarc CE docker image.
 

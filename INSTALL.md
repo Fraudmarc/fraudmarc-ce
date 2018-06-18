@@ -4,13 +4,12 @@
 
 Here are the steps to setup Fraudmarc CE to collect and process DMARC data for your domain(s). 
 
-1. Create AWS role for Fraudmarc CE
-2. Create a PostgreSQL Database
-3. Setup Docker
-4. Deploy Lambda functions to process DMARC reports with Docker Hub
-5. Configure AWS SES to receive DMARC reports & invoke our Lambdas for processing
-6. Run the Fraudmarc CE client with Docker
-7. Publish a DMARC policy to collect reports
+1. Create AWS User for Fraudmarc CE
+2. Run the Fraudmarc CE Install Docker
+3. Configure Your PostgreSQL Database
+4. Setup Your AWS Simple Email Service (SES)
+5. Run The Fraudmarc CE Client Docker
+6. Publish a DMARC policy to collect reports
 
 ## System overview
 
@@ -22,8 +21,10 @@ Here are the steps to setup Fraudmarc CE to collect and process DMARC data for y
 **Want DMARC data without complex cloud infrastructure? Try our [hosted DMARC service](https://www.fraudmarc.com/plans/).**
 
 ### 1. Create AWS Group and User for Fraudmarc CE👍
-**This installation guide is aimed for users who want to process DMARC reports quickly and easily. If you want to setup SES, S3 bucket, RDS instance, Lambda functions yourself, follow [this guide](). Otherwise, please understand that in order for you to setup the Fraudmarc CE with the minimum amount of effort, you need to grant us with certain permissions in order to setup the different AWS services for you.**
-*Before proceeding the install guide, create an AWS account!*
+**This installation guide is aimed for users who want to process DMARC reports quickly and easily. If you want to setup SES, S3 bucket, RDS instance, Lambda functions yourself, follow [this guide](). Otherwise, please understand that in order for you to setup Fraudmarc CE with the minimum amount of effort, you need to grant us with certain permissions in order to setup the different AWS services for you.**
+
+*Before proceeding the install guide, [create an AWS account](https://aws.amazon.com/free/)!*
+
 We will first start with creating an AWS Group and adding a User to the group that will be used to setup the AWS services automatically.
 
 1. Go to the IAM service in the AWS Console. In the left nav bar, click `Groups` and `Create New Group`. You can name the group however you like. Proceed to `Next Step`.
@@ -44,7 +45,7 @@ We will first start with creating an AWS Group and adding a User to the group th
 
 5. Inside the `Add user to group` box, check the box next to the new group you created and proceed to `Next:Review`. After reviewing, click `Create user`.
 
-6. You will now see values inside `Access key ID` and `Secret access key`. Copy those values into the `/installer/env.list` file as such:
+6. You will now see values inside `Access key ID` and `Secret access key`. Copy those values into the `/installer/env.list`:
 
 ```
 ...
@@ -52,55 +53,69 @@ AWS_ACCESS_KEY_ID=YOURACCESSKEY
 AWS_SECRET_ACCESS_KEY=YourSecretKey
 ...
 ```
+7. Click the region on the upper right corner, and choose one of the following based on your position: `US East N.V`, `EU (Ireland)`, `US West (OR)`. This will be your default location. Add the default AWS region (i.e.  `us-east-1`) to `/installer/env.list`:
+```
+...
+AWS_DEFAULT_REGION=your-aws-region
+...
+```
+
 7. Choose a name for your S3 Bucket(needs to be a globally unique name) that will receive DMARC report emails from SES, and enter the name into `/installer/env.list` as such:
 
 ```
 ...
-BUCKET_NAME=My-Globally-Unique-Bucket-Name
+BUCKET_NAME=Your-Globally-Unique-Bucket-Name
 ...
 ```
-This is needed for us to deploy your lambda functions.
 
-8. Hooray! The hard part is done :)
+### 2. Setup Docker and Run fraudmarc-ce-install Docker Image
+This step runs the fraudmarc-ce-install Docker image, which creates an AWS Role, launches a free-tier RDS Postgres database, and deploys the Lambda functions that are needed to retrieve and process the DMARC reports from the S3 bucket and update the Postgres Database.
+1. Run the command to update docker:
 
-### 1. Create AWS Role for Fraudmarc CE👍
-
-1. Go to AWS IAM panel, and click the Roles on the left. Create a role for Fraudmarc CE lambda functions. 
-
-2. Select AWS Service, and click lambda function.
-
-3. Check the box net to the `AmazonS3ReadOnlyAccess` and  `CloudWatchLogsFullAccess` permissions.
-
-4. Set the Role name to `FraudmarcCE` and Create role.
-
-5. Click on the role you just created to see the Role ARN in the form like `arn:aws:iam::<AccountID>:role/fraudmarcce`. Copy this ARN to the existing role field in the installer/env.list (don't be confused with the env.list in the root directory!) ⬇️
-
+   ```shell
+   sudo apt install docker.io
    ```
-   AWS_ROLE_ARN=`arn:aws:iam::<AccountID>:role/fraudmarcce
-   ```
+2. Confirm that all fields in `installer/env.list` have been correctly filled.
 
-### 2. Setup Your Database:thumbsup:
+3. Choose a username and password for RDS. Enter the values into `./envlist` :
+    >The username must follow these rules
+    Must be 1 to 63 letters or numbers.
+    First character must be a letter.
+    Cannot be a reserved word for the chosen database engine.
 
-Instructions for creating the database in AWS RDS. You are welcome to use any other PostgreSQL database server.
+    and the password can be from 8-128 characters
+```
+...
+REPORTING_DB_USER=masterUsername
+REPORTING_DB_PASSWORD=your-rds-password
+...
+```
+Great! Now you are ready to run the Docker image :)
 
+4. Run Docker Image from Docker Hub
+*If the following commands prompts permission denied error on your computer, you may need `sudo` privilege.*
+
+You are able to run the install Docker image from the Docker Hub public repository, or you can build it from scratch using our Dockerfile in the `installer` directory.
+
+* Option 1: run Docker image from public repo:
+    ```shell
+    docker run -it --env-file env.list --env-file installer/env.list fraudmarc/fraudmarc-ce-install
+    ```
+* Option 2: build (may take a few minutes) and run Docker image from /installer/Dockerfile (navigate to `/installer/` directory):
+    ```shell
+    docker build -t fraudmarc-ce-install -f installer/Dockerfile .
+    docker run -it --env-file env.list --env-file installer/env.list fraudmarc-ce-install
+    ```
+
+If you reached this point, you have successfully created an IAM role, deployed 2 Lambda functions, and launched a RDS database Now let's finish your database configuration and SES setup!
+
+### 3. Configure Your Database:thumbsup:
 *If you need maximum security, use a private VPC for your RDS instance and Lambdas. Such configuration is beyond the scope of this document.* 
 
-1. Set up a RDS PostgreSQL database via [AWS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_GettingStarted.CreatingConnecting.PostgreSQL.html) instruction
+As mentioned above, your RDS database has already been launched by the Docker image. However, there are some configurations that need to be done.
+1. Go to the RDS console -> Instances tab. The database instance that have been created for you can be found as `fraudmarcce`. Click on the instance.
 
-   1. Go to AWS RDS panel and click the region on the upper right corner, and choose one of the following based on your position: `US East N.V`, `EU (Ireland)`, `US West (OR)`.
-   2. Go to AWS RDS panel and click Instances on the left panel, and click Launch DB instance
-   3. Through the creating process, you need to choose PostgreSQL, decide the DB instance class based on your DMARC report volume, and fill the DB instance identifier, master username and password.
-   4. Set Public accessibility to Yes.
-   5. Set the name of Database to `fraudmarcce`
-
-2. After you launch the DB instance, you need to wait a few minutes for it to completely setup (check the `DB instance status` in the Summary panel). 
-
-3. If you have already configured your AWS account jump to `Step 3`. Otherwise, find your instance's `Availability zone` (i.e.  `us-east-1`). Create a new file named `config` under `~/.aws`, and the content should be as such:
-
-   ```
-   [default]
-   region=[your region]
-   ```
+2. Although we have launched the instance, you need to wait a few minutes for it to completely setup (check the `DB instance status` in the Summary panel). 
 
 4. Choose the instance you just created, scroll down to Security group rule, and click the `Inbound` tab at the bottom of the new window.
 
@@ -115,11 +130,11 @@ Instructions for creating the database in AWS RDS. You are welcome to use any ot
    pg_restore --no-privileges --no-owner -v -h [endpoint of instance] -U [master username] -n public -d [new database name (not instance name)] fraudmarcce
    ```
 
-8. Go to RDS panel and choose the Instances on the left panel. Choose the `fraudmarcce` instance you just created. Copy the `DB name`, `Username`, `Endpoint` to the `env.list` file in the project repository root directory like:arrow_down:
+8. Go to RDS panel and choose the Instances on the left panel. Choose the `fraudmarcce` instance you just created. Scroll down to `Connect`, and copy the `Endpoint` value to `/env.list` file in the project repository `root` directory like:arrow_down:
 
    ```
    # Set to match your environment
-   REPORTING_DB_NAME=[DB name]
+   REPORTING_DB_NAME=fraudmarcce
    REPORTING_DB_USER=[Username]
    REPORTING_DB_PASSWORD=[password]
    REPORTING_DB_HOST=[Endpoint]
@@ -127,27 +142,7 @@ Instructions for creating the database in AWS RDS. You are welcome to use any ot
    REPORTING_DB_MAX_TIME=180s
    ```
 
-### 3. Setup Docker and Pull Install Docker Image
-This step runs the fraudmarc-ce-install image, which using the given Role ARN and AWS credentials, deploys the Lambda functions that are needed to retrieve and process the DMARC reports from the S3 bucket and update the Postgres Database.
-1. Run the command to update docker:
 
-   ```shell
-   sudo apt install docker.io
-   ```
-2. Run Docker Image from Docker Hub
-*If the following commands prompts permission denied error on your computer, you may need `sudo` privilege.*
-
-You are able to run the install Docker image from the Docker Hub public repository, or you can build it from scratch using our Dockerfile in the `installer` directory.
-
-* run Docker image from public repo:
-    ```shell
-    docker run -it --env-file env.list --env-file installer/env.list fraudmarc/fraudmarc-ce-install
-    ```
-* build and run Docker image from /installer/Dockerfile:
-    ```shell
-    docker build -t fraudmarc-ce-install -f installer/Dockerfile .
-    docker run -it --env-file env.list --env-file installer/env.list fraudmarc-ce-install
-    ```
 
 ### 4. Setup Your AWS Simple Email Service (SES):thumbsup:
 
@@ -159,40 +154,42 @@ You are able to run the install Docker image from the Docker Hub public reposito
 
 3. Enter the email address that the DMARC Report will be sent to (`dmarc@fraudmarc-ce.<your domain name>`), and click Next Step.
 
-4. Add action with type S3, and create a S3 bucket with a globally unique name.
+4. Add action with type S3, and create a S3 bucket with the BUCKET_NAME that you have entered in `/installer/env.list`. *The names must be identical*.
 
-5. Add action with type lambda and chose your receive lambda function. If prompted, grant permissions.
+5. Add action with type Lambda and chose your `receive` Lambda function. If prompted, grant permissions.
 
-6. Copy the S3 bucket name to the `project.json` file in project repository like:arrow_down:
+### 5. Run The Fraudmarc CE Docker:thumbsup:
 
-   ```json
-   ...
-   "environment": {
-       "BUCKET_NAME": "[bucket name]",
-   },
-   ```
+We've simplified the client side of Fraudmarc CE by providing a single Docker to provide both the Angular frontend and Go backend.
 
-### Run The Fraudmarc CE Docker:thumbsup:
+1. As with the Install Docker Image, you are able to run the install Docker image from the Docker Hub public repository, or you can build it from scratch using our Dockerfile in the `root` directory.
 
-We've simplified the client side of Fraudmarc CE by providing a single Docker to provide both the Angular frontend  and Go backend.
+* Option 1: run Docker image from public repo:
+    ```shell
+    docker run -it --env-file env.list --env-file installer/env.list -p 7489:7489 fraudmarc/fraudmarc-ce
+    ```
+* Option 2: build, Docker image from `/Dockerfile` (the build process may take several minutes):
+    ```shell
+    docker build -t fraudmarc-ce .
+    ```
 
-3. Navigate to the directory containing the Fraudmarc CE docker image.
+    * Navigate to the directory containing the Fraudmarc CE docker image.
 
-4. Run the command to download and set up dependencies. This process may take several minutes
+    * Run the command to download and set up dependencies. This process may take several minutes
 
-   ```shell
-   docker build -t fraudmarc-ce .
-   ```
+    ```shell
+    docker build -t fraudmarc-ce .
+    ```
 
-5. Run the docker image
+    * Run the docker image
 
-   ```shell
-   docker run -it --env-file env.list -p 7489:7489 fraudmarc-ce
-   ```
+    ```shell
+    docker run -it --env-file env.list -p 7489:7489 fraudmarc-ce
+    ```
 
-6. Your Fraudmarc CE installation is now ready at [http://localhost:7489](http://localhost:7489).
+2. Your Fraudmarc CE installation is now ready at [http://localhost:7489](http://localhost:7489).
 
-### Create a DMARC policy:thumbsup:
+### 6. Create a DMARC policy:thumbsup:
 
 **It may take between a few hours and a few days for your first data to arrive.** 
 

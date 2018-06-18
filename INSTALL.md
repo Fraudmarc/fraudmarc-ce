@@ -21,7 +21,7 @@ Here are the steps to setup Fraudmarc CE to collect and process DMARC data for y
 **Want DMARC data without complex cloud infrastructure? Try our [hosted DMARC service](https://www.fraudmarc.com/plans/).**
 
 ### 1. Create AWS Group and User for Fraudmarc CE👍
-**This installation guide is aimed for users who want to process DMARC reports quickly and easily. If you want to setup SES, S3 bucket, RDS instance, Lambda functions yourself, follow [this guide](). Otherwise, please understand that in order for you to setup Fraudmarc CE with the minimum amount of effort, you need to grant us with certain permissions in order to setup the different AWS services for you.**
+**This installation guide is aimed for users who want to process DMARC reports quickly and easily. If you want to setup SES, S3 bucket, RDS instance, Lambda functions yourself, follow [this guide](https://github.com/Fraudmarc/fraudmarc-ce/blob/master/ADVANCED_INSTALL.md). Otherwise, please understand that in order for you to setup Fraudmarc CE with the minimum amount of effort, you need to grant us with certain permissions in order to setup the different AWS services for you.**
 
 *Before proceeding the install guide, [create an AWS account](https://aws.amazon.com/free/)!*
 
@@ -169,10 +169,6 @@ We've simplified the client side of Fraudmarc CE by providing a single Docker to
     docker run -it --env-file env.list --env-file installer/env.list -p 7489:7489 fraudmarc/fraudmarc-ce
     ```
 * Option 2: build, Docker image from `/Dockerfile` (the build process may take several minutes):
-    ```shell
-    docker build -t fraudmarc-ce .
-    ```
-
     * Navigate to the directory containing the Fraudmarc CE docker image.
 
     * Run the command to download and set up dependencies. This process may take several minutes

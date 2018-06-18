@@ -41,11 +41,11 @@ We will first start with creating an AWS Group and adding a User to the group th
 
 3. Review and `Create Group`
 
-4. Go to the `Users` tab and `Add user`. You can name the user however you like (i.e. fraudmarc-ce-installer). Click on the `programmatic access` in `Access type` and click `Next:Permissions`.
+4. Go to the `Users` tab and `Add user`. You can name the user however you like (i.e. fraudmarc-ce-installer). Click on the box next to `programmatic access` in `Access type` and click `Next:Permissions`.
 
-5. Inside the `Add user to group` box, check the box next to the new group you created and proceed to `Next:Review`. After reviewing, click `Create user`.
+5. Inside the `Add user to group` tab, check the box next to the new group you created and proceed to `Next:Review`. After reviewing, click `Create user`.
 
-6. You will now see values inside `Access key ID` and `Secret access key`. Copy those values into the `/installer/env.list`:
+6. You will now see values inside `Access key ID` and `Secret access key`. Copy those values into `/installer/env.list`:
 
 ```
 ...
@@ -53,7 +53,7 @@ AWS_ACCESS_KEY_ID=YOURACCESSKEY
 AWS_SECRET_ACCESS_KEY=YourSecretKey
 ...
 ```
-7. Click the region on the upper right corner, and choose one of the following based on your position: `US East N.V`, `EU (Ireland)`, `US West (OR)`. This will be your default location. Add the default AWS region (i.e.  `us-east-1`) to `/installer/env.list`:
+7. Check out [AWS Regions](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) and identify your AWS region. This will be your default location. Add the default AWS region (i.e.  `us-east-1`) to `/installer/env.list`:
 ```
 ...
 AWS_DEFAULT_REGION=your-aws-region
@@ -69,7 +69,7 @@ BUCKET_NAME=Your-Globally-Unique-Bucket-Name
 ```
 
 ### 2. Setup Docker and Run fraudmarc-ce-install Docker Image
-This step runs the fraudmarc-ce-install Docker image, which creates an AWS Role, launches a free-tier RDS Postgres database, and deploys the Lambda functions that are needed to retrieve and process the DMARC reports from the S3 bucket and update the Postgres Database.
+This step runs the fraudmarc-ce-install Docker image, which creates an AWS Role, launches a free-tier RDS Postgres database, and deploys the Lambda functions that are needed to retrieve and process the DMARC reports from the S3 bucket and updates the Postgres Database.
 1. Run the command to update docker:
 
    ```shell
@@ -78,12 +78,12 @@ This step runs the fraudmarc-ce-install Docker image, which creates an AWS Role,
 2. Confirm that all fields in `installer/env.list` have been correctly filled.
 
 3. Choose a username and password for RDS. Enter the values into `./envlist` :
-    >The username must follow these rules
-    Must be 1 to 63 letters or numbers.
-    First character must be a letter.
-    Cannot be a reserved word for the chosen database engine.
+    * The username must follow these rules
+        * Must be 1 to 63 letters or numbers.
+        * First character must be a letter.
+        * Cannot be a reserved word for the chosen database engine.
 
-    and the password can be from 8-128 characters
+    * and the password can be from 8-128 characters
 ```
 ...
 REPORTING_DB_USER=masterUsername
@@ -132,15 +132,15 @@ As mentioned above, your RDS database has already been launched by the Docker im
 
 8. Go to RDS panel and choose the Instances on the left panel. Choose the `fraudmarcce` instance you just created. Scroll down to `Connect`, and copy the `Endpoint` value to `/env.list` file in the project repository `root` directory like:arrow_down:
 
-   ```
-   # Set to match your environment
-   REPORTING_DB_NAME=fraudmarcce
-   REPORTING_DB_USER=[Username]
-   REPORTING_DB_PASSWORD=[password]
-   REPORTING_DB_HOST=[Endpoint]
-   REPORTING_DB_SSL=require
-   REPORTING_DB_MAX_TIME=180s
-   ```
+    ```
+    # Set to match your environment
+    REPORTING_DB_NAME=fraudmarcce
+    REPORTING_DB_USER=masterUsername
+    REPORTING_DB_PASSWORD=your-rds-password
+    REPORTING_DB_HOST=your.endpoint
+    REPORTING_DB_SSL=require
+    REPORTING_DB_MAX_TIME=180s
+    ```
 
 
 

@@ -40,9 +40,9 @@ COPY --from=builder /fraudmarc-ce-receive.zip /fraudmarc-ce-process.zip /
 COPY /installer/lambda-assume-policy.json / 
 CMD aws rds create-db-instance --db-name fraudmarcce --db-instance-identifier fraudmarcce \
         --allocated-storage 20 --db-instance-class db.t2.micro --engine postgres --master-username $REPORTING_DB_USER \
-        --master-user-password $REPORTING_DB_PASSWORD > output.json && cat output.json \
+        --master-user-password $REPORTING_DB_PASSWORD > output.json && echo "RDS DB Launched: " && cat output.json \
     && export AWS_ROLE_ARN=$(aws iam create-role --role-name FraudmarcCE --assume-role-policy-document file:///lambda-assume-policy.json \
-    | jq ".Role.Arn" | tr -d "\"") && echo $AWS_ROLE_ARN && sleep 5 \
+    | jq ".Role.Arn" | tr -d "\"") && echo AWS Role has been created: $AWS_ROLE_ARN && sleep 5 \
     && aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess --role-name FraudmarcCE \
     && aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/CloudWatchLogsFullAccess --role-name FraudmarcCE \
     && aws lambda create-function \

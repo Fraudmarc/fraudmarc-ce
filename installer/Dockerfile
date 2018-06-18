@@ -38,11 +38,12 @@ RUN apk -Uuv add python py-pip jq && \
 	rm /var/cache/apk/*
 COPY --from=builder /fraudmarc-ce-receive.zip /fraudmarc-ce-process.zip /
 COPY /installer/lambda-assume-policy.json / 
-CMD aws rds create-db-instance --db-name fraudmarcce --db-instance-identifier fraudmarcce \
+COPY /installer/inline-policy.json /
+CMD aws rds create-db-instance --db-name $REPORTING_DB_NAME --db-instance-identifier fraudmarcce \
         --allocated-storage 20 --db-instance-class db.t2.micro --engine postgres --master-username $REPORTING_DB_USER \
-        --master-user-password $REPORTING_DB_PASSWORD > output.json && echo "RDS DB Launched: " && cat output.json \
+        --master-user-password $REPORTING_DB_PASSWORD > /dev/null \
     && export AWS_ROLE_ARN=$(aws iam create-role --role-name FraudmarcCE --assume-role-policy-document file:///lambda-assume-policy.json \
-    | jq ".Role.Arn" | tr -d "\"") && echo AWS Role has been created: $AWS_ROLE_ARN && sleep 5 \
+    | jq ".Role.Arn" | tr -d "\"") && sleep 6 \
     && aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess --role-name FraudmarcCE \
     && aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/CloudWatchLogsFullAccess --role-name FraudmarcCE \
     && aws lambda create-function \
@@ -92,21 +93,5 @@ CMD aws rds create-db-instance --db-name fraudmarcce --db-instance-identifier fr
         --zip-file fileb://fraudmarc-ce-receive.zip \
         --handler receive \
         | jq ".FunctionArn" | xargs -I {} \
-        echo \
-          '{                                                                \
-              "Version": "2012-10-17",                                      \
-              "Statement": [                                                \
-                  {                                                         \
-                      "Sid": "VisualEditor0",                               \
-                      "Effect": "Allow",                                    \
-                      "Action": [                                           \
-                          "lambda:InvokeFunction",                          \
-                          "lambda:InvokeAsync"                              \
-                      ],                                                    \
-                      "Resource": {}                                        \
-                  }                                                         \
-              ]                                                             \
-          }'                                                                \
-          > inlinePolicy.json && cat inlinePolicy.json \
-        && aws iam put-role-policy --role-name FraudmarcCE --policy-name invokeProcessLambda --policy-document file:///inlinePolicy.json \
-        && cat inlinePolicy.json | jq ".Statement[0].Resource" | tr -d "\"" | xargs -I {} 
+        sed -i 's/ARN/{}/g' inline-policy.json \
+        && aws iam put-role-policy --role-name FraudmarcCE --policy-name invokeProcessLambda --policy-document file:///inline-policy.json

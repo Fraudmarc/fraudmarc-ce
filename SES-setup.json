@@ -1,0 +1,17 @@
+{
+    "Name": "DMARC-Receive",
+    "Enabled": true,
+    "TlsPolicy": "Optional",
+    "Recipients": ["dmarc@fraudmarc-ce.$DOMAIN_NAME"],
+    "Actions": [
+    {
+        "S3Action": {
+          "BucketName": "$BUCKET_NAME"
+        },
+        "LambdaAction": {
+          "FunctionArn": "string",
+          "InvocationType": "Event"
+        }
+    }],
+    "ScanEnabled": true
+  }

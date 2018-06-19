@@ -1,5 +1,0 @@
-{
-  "name": "receive",
-  "description": "Receive DMARC RUA Reports",
-  "memory": 1536
-}

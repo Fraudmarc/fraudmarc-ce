@@ -21,9 +21,11 @@ Here are the steps to setup Fraudmarc CE to collect and process DMARC data for y
 **Want DMARC data without complex cloud infrastructure? Try our [hosted DMARC service](https://www.fraudmarc.com/plans/).**
 
 ### 1. Create AWS Group and User for Fraudmarc CE👍
-**This installation guide is aimed for users who want to process DMARC reports quickly and easily. If you want to setup SES, S3 bucket, RDS instance, Lambda functions yourself, follow [this guide](https://github.com/Fraudmarc/fraudmarc-ce/blob/master/ADVANCED_INSTALL.md). Otherwise, please understand that in order for you to setup Fraudmarc CE with the minimum amount of effort, you need to grant us with certain permissions in order to setup the different AWS services for you.**
+**This installation guide is aimed for users who want to process DMARC reports quickly and easily. If you want to setup SES, RDS DB(Postgres DB), Lambda functions yourself, follow [this guide](https://github.com/Fraudmarc/fraudmarc-ce/blob/master/ADVANCED_INSTALL.md). Otherwise, please understand that in order for you to setup Fraudmarc CE with the minimum amount of effort, you need to grant us with certain permissions in order to setup the different AWS services for you.**
 
 *Before proceeding the install guide, [create an AWS account](https://aws.amazon.com/free/)!*
+
+*Also, don't forget to clone this repository to your local machine :)*
 
 We will first start with creating an AWS Group and adding a User to the group that will be used to setup the AWS services automatically.
 
@@ -37,7 +39,7 @@ We will first start with creating an AWS Group and adding a User to the group th
 * AmazonSESFullAccess (grants access to setup SES that will receive DMARC reports)
 * CloudWatchLogsFullAccess (not used in setup, but you can use it to find problems/bugs)
 
-*you can check our Dockerfiles in our `root` directory and in `/installer/` to see what we actually do with these privileges. We are only using these to help you setup your Fraudmarc CE, and if in doubt, you can perform the installation steps yourself*
+*you can check our Dockerfiles in the `root` directory and in `/installer/` to see what we actually do with these privileges. We are only using these to help you setup your Fraudmarc CE, and if in doubt, you can perform the installation steps yourself :) *
 
 3. Review and `Create Group`
 
@@ -60,7 +62,7 @@ AWS_DEFAULT_REGION=your-aws-region
 ...
 ```
 
-7. Choose a name for your S3 Bucket(needs to be a globally unique name) that will receive DMARC report emails from SES, and enter the name into `/installer/env.list` as such:
+8. Enter into `/installer/env.list` your S3 Bucket name (needs to be a globally unique name - i.e. fraudmarc-ce-YourCompany) that will receive DMARC report emails from SES:
 
 ```
 ...
@@ -75,7 +77,7 @@ This step runs the fraudmarc-ce-install Docker image, which creates an AWS Role,
    ```shell
    sudo apt install docker.io
    ```
-2. Confirm that all fields in `installer/env.list` have been correctly filled.
+2. Confirm that you have filled in the access key, secret key, default region, and bucket name fields in `installer/env.list`.
 
 3. Choose a username and password for RDS. Enter the values into `./envlist` :
     * The username must follow these rules
@@ -90,18 +92,19 @@ REPORTING_DB_USER=masterUsername
 REPORTING_DB_PASSWORD=your-rds-password
 ...
 ```
-Great! Now you are ready to run the Docker image :)
+Great! Now you are ready to run the Docker image :) (`REPORTING_DB_HOST` field in `/env.list` can be left empty for now!)
 
 4. Run Docker Image from Docker Hub
+
 *If the following commands prompts permission denied error on your computer, you may need `sudo` privilege.*
 
 You are able to run the install Docker image from the Docker Hub public repository, or you can build it from scratch using our Dockerfile in the `installer` directory.
 
-* Option 1: run Docker image from public repo:
+* Option 1 (Faster): run pre-built Docker image from Docker Hub (navigate to `root` directory):
     ```shell
     docker run -it --env-file env.list --env-file installer/env.list fraudmarc/fraudmarc-ce-install
     ```
-* Option 2: build (may take a few minutes) and run Docker image from /installer/Dockerfile (navigate to `/installer/` directory):
+* Option 2: build (may take a few minutes) and run Docker image from /installer/Dockerfile (navigate to `root` directory):
     ```shell
     docker build -t fraudmarc-ce-install -f installer/Dockerfile .
     docker run -it --env-file env.list --env-file installer/env.list fraudmarc-ce-install
@@ -123,11 +126,11 @@ As mentioned above, your RDS database has already been launched by the Docker im
 
 6. Install the [PSQL](<https://www.postgresql.org/download/>) command line tool on your local machine.
 
-7. Import the Fraudmarc CE schema into your new database with the command (You can find your endpoint on your RDS instance panel) below: 
+7. Navigate to the `root` directory and import the Fraudmarc CE schema into your new database with the command (You can find your endpoint on your RDS instance panel) below: 
 
    ```shell
-   cd /path/to/fraudmarc-ce
-   pg_restore --no-privileges --no-owner -v -h [endpoint of instance] -U [master username] -n public -d [new database name (not instance name)] fraudmarcce
+   cd ..path-to-fraudmarc-ce/
+   pg_restore --no-privileges --no-owner -v -h [endpoint of DB instance] -U [DB master username] -n public -d [new DB name (*not instance name*)] fraudmarcce
    ```
 
 8. Go to RDS panel and choose the Instances on the left panel. Choose the `fraudmarcce` instance you just created. Scroll down to `Connect`, and copy the `Endpoint` value to `/env.list` file in the project repository `root` directory like:arrow_down:
@@ -154,7 +157,7 @@ As mentioned above, your RDS database has already been launched by the Docker im
 
 3. Enter the email address that the DMARC Report will be sent to (`dmarc@fraudmarc-ce.<your domain name>`), and click Next Step.
 
-4. Add action with type S3, and create a S3 bucket with the BUCKET_NAME that you have entered in `/installer/env.list`. *The names must be identical*.
+4. Add action with type S3, and create a S3 bucket with the BUCKET_NAME that you have entered in `/installer/env.list`. *The names must be identical.*
 
 5. Add action with type Lambda and chose your `receive` Lambda function. If prompted, grant permissions.
 
@@ -164,12 +167,12 @@ We've simplified the client side of Fraudmarc CE by providing a single Docker to
 
 1. As with the Install Docker Image, you are able to run the install Docker image from the Docker Hub public repository, or you can build it from scratch using our Dockerfile in the `root` directory.
 
-* Option 1: run Docker image from public repo:
+* Option 1(Faster): run pre-built Docker image in Docker Hub (navigate to `root` directory):
     ```shell
     docker run -it --env-file env.list --env-file installer/env.list -p 7489:7489 fraudmarc/fraudmarc-ce
     ```
 * Option 2: build, Docker image from `/Dockerfile` (the build process may take several minutes):
-    * Navigate to the directory containing the Fraudmarc CE docker image.
+    * Navigate to the directory containing the Fraudmarc CE docker image (`root` directory).
 
     * Run the command to download and set up dependencies. This process may take several minutes
 

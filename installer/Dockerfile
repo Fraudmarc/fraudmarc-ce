@@ -39,13 +39,15 @@ RUN apk -Uuv add python py-pip jq && \
 COPY --from=builder /fraudmarc-ce-receive.zip /fraudmarc-ce-process.zip /
 COPY /installer/lambda-assume-policy.json / 
 COPY /installer/inline-policy.json /
-CMD aws rds create-db-instance --db-name $REPORTING_DB_NAME --db-instance-identifier fraudmarcce \
+CMD aws rds create-db-instance --db-name $REPORTING_DB_NAME --db-instance-identifier $REPORTING_DB_IDENTIFIER \
         --allocated-storage 20 --db-instance-class db.t2.micro --engine postgres --master-username $REPORTING_DB_USER \
         --master-user-password $REPORTING_DB_PASSWORD > /dev/null \
+    && echo "Your Database has been launched! Check the AWS RDS Console -> Instances tab (fraudmarcce)" \
     && export AWS_ROLE_ARN=$(aws iam create-role --role-name FraudmarcCE --assume-role-policy-document file:///lambda-assume-policy.json \
     | jq ".Role.Arn" | tr -d "\"") && sleep 6 \
     && aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess --role-name FraudmarcCE \
     && aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/CloudWatchLogsFullAccess --role-name FraudmarcCE \
+    && echo "Your IAM Role has been created! Check the AWS IAM Console (FraudmarcCE)" \
     && aws lambda create-function \
     --region $AWS_DEFAULT_REGION \
     --function-name fraudmarc-ce-process \
@@ -94,4 +96,7 @@ CMD aws rds create-db-instance --db-name $REPORTING_DB_NAME --db-instance-identi
         --handler receive \
         | jq ".FunctionArn" | xargs -I {} \
         sed -i 's/ARN/{}/g' inline-policy.json \
-        && aws iam put-role-policy --role-name FraudmarcCE --policy-name invokeProcessLambda --policy-document file:///inline-policy.json
+        && echo "Your Lambda functions have been created! Check the AWS Lambda Console (fraudmarc-ce-receive/process)" \
+        && aws iam put-role-policy --role-name FraudmarcCE --policy-name invokeProcessLambda --policy-document file:///inline-policy.json \
+        && echo "Your inline-policy has been added to the FraudmarcCE role! Check the IAM Console" \
+        && echo "Your AWS Role, RDS, Lambdas has been setup. Fraudmarc CE installation complete."

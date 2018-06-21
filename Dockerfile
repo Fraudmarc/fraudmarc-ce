@@ -6,30 +6,34 @@
 # docker stop $(docker ps -a -q); docker rm $(docker ps -a -q); docker rmi -f $(docker images -q); docker images
 
 FROM node:alpine as frontend
-COPY /frontend/package.json /frontend/package-lock.json ./
-RUN npm i && mkdir /frontend && cp -R ./node_modules ./frontend
+COPY /frontend /frontend
 WORKDIR /frontend
-COPY /frontend .
-RUN $(npm bin)/ng build --prod
+RUN npm ci --silent && \
+    $(npm bin)/ng build --prod --no-progress && \
+    cp -R dist / && \
+    cd / && \
+    rm -rf /frontend /.npm
 
 FROM golang:alpine as backend
-RUN apk -Uuv add git && \
-	rm /var/cache/apk/*
-RUN (go get -d gopkg.in/mgutz/dat.v1 ; exit 0)
 COPY /database/dat.patch /
-WORKDIR $GOPATH/src/gopkg.in/mgutz/dat.v1
-RUN patch -p1 < /dat.patch
 COPY /backend/server /server
-WORKDIR /server
-RUN go get \
+RUN apk -Uuv add git && \
+	rm /var/cache/apk/* && \
+    (go get -d gopkg.in/mgutz/dat.v1 ; exit 0) && \
+    cd $GOPATH/src/gopkg.in/mgutz/dat.v1 && \
+    patch -p1 < /dat.patch && \
+    cd /server && \
+    go get \
     github.com/fraudmarc/fraudmarc-ce/backend/lib \
     github.com/fraudmarc/fraudmarc-ce/database \
-    github.com/gorilla/mux
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o fraudmarc-ce .
+    github.com/gorilla/mux && \
+    CGO_ENABLED=0 GOOS=linux \
+    go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o /fraudmarc-ce . && \
+    rm -rf $GOPATH /server
 
 FROM scratch
-COPY --from=frontend /frontend/dist /dist
-COPY --from=backend /server/fraudmarc-ce /server/
+COPY --from=frontend /dist /dist
+COPY --from=backend /fraudmarc-ce /server/
 WORKDIR /server
 CMD ["./fraudmarc-ce"]
 EXPOSE 7489

@@ -6,11 +6,13 @@
 # docker stop $(docker ps -a -q); docker rm $(docker ps -a -q); docker rmi -f $(docker images -q); docker images
 
 FROM node:alpine as frontend
-COPY /frontend/package.json /frontend/package-lock.json ./
-RUN npm i && mkdir /frontend && cp -R ./node_modules ./frontend
+COPY /frontend /frontend
 WORKDIR /frontend
-COPY /frontend .
-RUN $(npm bin)/ng build --prod
+RUN npm ci && \
+    $(npm bin)/ng build --prod --no-progress && \
+    cp -R dist / && \
+    cd / && \
+    rm -rf /frontend
 
 FROM golang:alpine as backend
 RUN apk -Uuv add git && \
@@ -28,7 +30,7 @@ RUN go get \
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o fraudmarc-ce .
 
 FROM scratch
-COPY --from=frontend /frontend/dist /dist
+COPY --from=frontend /dist /dist
 COPY --from=backend /server/fraudmarc-ce /server/
 WORKDIR /server
 CMD ["./fraudmarc-ce"]

@@ -1,0 +1,22 @@
+sudo: required
+
+services:
+  - docker
+
+#addons:
+#  apt:
+#    packages:
+#      - docker-ce
+
+before_install:
+  - docker --version
+
+script:
+  - docker build -t fraudmarc/fraudmarc-ce .
+  - docker build -t fraudmarc/fraudmarc-ce-install -f installer/Dockerfile .
+
+deploy:
+  provider: script
+  script: bash docker_push.sh
+  on:
+    branch: master

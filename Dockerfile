@@ -28,7 +28,7 @@ RUN apk -Uuv add git && \
     github.com/fraudmarc/fraudmarc-ce/database \
     github.com/gorilla/mux && \
     CGO_ENABLED=0 GOOS=linux \
-    go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o /fraudmarc-ce . && \
+    go build -a -installsuffix cgo -ldflags '-s -w -extldflags "-static"' -o /fraudmarc-ce . && \
     rm -rf $GOPATH /server
 
 FROM scratch

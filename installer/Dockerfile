@@ -25,8 +25,6 @@ RUN go get \
     github.com/fraudmarc/fraudmarc-ce/database \
     golang.org/x/text/encoding
 WORKDIR /receive
-RUN apk -Uuv add file && \
-	rm /var/cache/apk/*
 RUN CGO_ENABLED=0 GOOS=linux \
     go build -a -installsuffix cgo -ldflags '-s -w -extldflags "-static"' -o receive .
 RUN zip ../fraudmarc-ce-receive.zip ./receive

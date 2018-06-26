@@ -15,6 +15,9 @@ script:
   - docker build -t fraudmarc/fraudmarc-ce .
   - docker build -t fraudmarc/fraudmarc-ce-install -f installer/Dockerfile .
 
+after_script:
+  - docker images
+
 deploy:
   provider: script
   script: bash docker_push.sh

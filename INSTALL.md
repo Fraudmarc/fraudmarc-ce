@@ -120,20 +120,27 @@ As mentioned above, your RDS database has already been launched by the Docker im
 
 2. Although we have launched the instance, you need to wait a few minutes for it to completely setup (check the `DB instance status` in the Summary panel). 
 
-4. Choose the instance you just created, scroll down to Security group rule, and click the `Inbound` tab at the bottom of the new window.
+3. After the DB instance has been successfully created (can be in the `backing up` status), scroll down to the `Connect` panel and copy the value below `Endpoint` (i.e. `fraudmarcce.aaaaaaaaaaaa.aa-aaaa-a.rds.amazonaws.com`) and paste it to `env.list` in the `root` directory as such:
 
-5. Click the `Edit` button, and click the `Add rule` button. Give the Port Range the same with the previous one, and Source should be `Anywhere` from the drop down.
+(inside `/env.list`)
+```
+...
+REPORTING_DB_HOST=fraudmarcce.aaaaaaaaaaaa.aa-aaaa-a.rds.amazonaws.com
+...
+```
 
-6. Install the [PSQL](<https://www.postgresql.org/download/>) command line tool on your local machine.
+4. Go to the AWS Lambda Console and click on the `fraudmarc-ce-process` function. In the `Environment variables` panel below, fill the value for the `REPORTING_DB_HOST` key with the `Endpoint` value . Repeat this step for `fraudmarc-ce-receive`.
 
-7. Navigate to the `root` directory and import the Fraudmarc CE schema into your new database with the command (You can find your endpoint on your RDS instance panel) below: 
+5. Install the [PSQL](<https://www.postgresql.org/download/>) command line tool on your local machine.
+
+6. Navigate to the `root` directory and import the Fraudmarc CE schema into your new database with the command (You can find your endpoint on your RDS instance panel) below: 
 
    ```shell
    cd ..path-to-fraudmarc-ce/
    pg_restore --no-privileges --no-owner -v -h [endpoint of DB instance] -U [DB master username] -n public -d [new DB name (*not instance name*)] fraudmarcce
    ```
 
-8. Go to RDS panel and choose the Instances on the left panel. Choose the `fraudmarcce` instance you just created. Scroll down to `Connect`, and copy the `Endpoint` value to `/env.list` file in the project repository `root` directory like:arrow_down:
+7. Go to RDS panel and choose the Instances on the left panel. Choose the `fraudmarcce` instance you just created. Scroll down to `Connect`, and copy the `Endpoint` value to `/env.list` file in the project repository `root` directory like:arrow_down:
 
     ```
     # Set to match your environment

@@ -45,9 +45,9 @@ Instructions are for creating the database in AWS RDS. You are welcome to use an
    region=[your region]
    ```
 
-4. Choose the instance you just created, scroll down to Security group rule, and click the `Inbound` tab at the bottom of the new window.
+4. When the DB instance has been created, choose the instance from the `Instances` tab, and scroll down to Security group rule. Click on one of the security rules and in the new window that pops up, scroll down and click on the `Inbound` tab at the bottom.
 
-5. Click the `Edit` button, and click the `Add rule` button. Give the Port Range the same with the previous one, and Source should be `Anywhere`
+5. Click the `Edit` button, and click the `Add rule` button. Give the Port Range the same with the previous one (`5432`), and Source should be `Anywhere`
 
 6. Install the [PSQL](<https://www.postgresql.org/download/>) command line tool on your local machine.
 
@@ -155,7 +155,7 @@ Follow the [Go Installation Steps](https://golang.org/doc/install) to install Go
    go get ./...
    ```   
 
-5. Build and deploy the two lambda functions
+5. Build and deploy the two lambda functions (from the project `root` directory)
 
     ```shell
     apex deploy

@@ -17,7 +17,7 @@ RUN npm ci --silent && \
 FROM golang:alpine as backend
 COPY /database/dat.patch /
 COPY /backend/server /server
-RUN apk -Uuv add git && \
+RUN apk -Uuv add git upx && \
 	rm /var/cache/apk/* && \
     (go get -d gopkg.in/mgutz/dat.v1 ; exit 0) && \
     cd $GOPATH/src/gopkg.in/mgutz/dat.v1 && \
@@ -28,7 +28,9 @@ RUN apk -Uuv add git && \
     github.com/fraudmarc/fraudmarc-ce/database \
     github.com/gorilla/mux && \
     CGO_ENABLED=0 GOOS=linux \
-    go build -a -installsuffix cgo -ldflags '-s -w -extldflags "-static"' -o /fraudmarc-ce . && \
+    go build -a -installsuffix cgo -ldflags '-s -w -extldflags "-static"' -o fraudmarc-ce.sw . && \
+    upx -f --brute -o /fraudmarc-ce fraudmarc-ce.sw && \
+    cd / && \
     rm -rf $GOPATH /server
 
 FROM scratch

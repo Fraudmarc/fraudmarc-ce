@@ -100,14 +100,9 @@ Great! Now you are ready to run the Docker image :) (`REPORTING_DB_HOST` field i
 
 You are able to run the install Docker image from the Docker Hub public repository, or you can build it from scratch using our Dockerfile in the `installer` directory.
 
-* Option 1 (Faster): run pre-built Docker image from Docker Hub (navigate to `root` directory):
+* run pre-built Docker image from Docker Hub (navigate to `root` directory):
     ```shell
     docker run -it --env-file env.list --env-file installer/env.list fraudmarc/fraudmarc-ce-install
-    ```
-* Option 2: build (may take a few minutes) and run Docker image from /installer/Dockerfile (navigate to `root` directory):
-    ```shell
-    docker build -t fraudmarc-ce-install -f installer/Dockerfile .
-    docker run -it --env-file env.list --env-file installer/env.list fraudmarc-ce-install
     ```
 
 If you reached this point, you have successfully created an IAM role, deployed 2 Lambda functions, and launched a RDS database Now let's finish your database configuration and SES setup!
@@ -122,12 +117,12 @@ As mentioned above, your RDS database has already been launched by the Docker im
 
 3. After the DB instance has been successfully created (can be in the `backing up` status), scroll down to the `Connect` panel and copy the value below `Endpoint` (i.e. `fraudmarcce.aaaaaaaaaaaa.aa-aaaa-a.rds.amazonaws.com`) and paste it to `env.list` in the `root` directory as such:
 
-(inside `/env.list`)
-```
-...
-REPORTING_DB_HOST=fraudmarcce.aaaaaaaaaaaa.aa-aaaa-a.rds.amazonaws.com
-...
-```
+inside `/env.list`:
+    ```
+    ...
+    REPORTING_DB_HOST=fraudmarcce.aaaaaaaaaaaa.aa-aaaa-a.rds.amazonaws.com
+    ...
+    ```
 
 4. Go to the AWS Lambda Console and click on the `fraudmarc-ce-process` function. In the `Environment variables` panel below, fill the value for the `REPORTING_DB_HOST` key with the `Endpoint` value . Repeat this step for `fraudmarc-ce-receive`.
 
@@ -152,8 +147,6 @@ REPORTING_DB_HOST=fraudmarcce.aaaaaaaaaaaa.aa-aaaa-a.rds.amazonaws.com
     REPORTING_DB_MAX_TIME=180s
     ```
 
-
-
 ### 4. Setup Your AWS Simple Email Service (SES):thumbsup:
 
 1. In AWS SES, choose the Domain on the left side, and click Verify a New Domain. Enter  `fraudmarc-ce.<your domain name>`. Your DMARC Reports will be delievered here. Follow the instructions to setup the Domain Verification Record and Email Receiving Record to complete the verification.
@@ -174,25 +167,10 @@ We've simplified the client side of Fraudmarc CE by providing a single Docker to
 
 1. As with the Install Docker Image, you are able to run the install Docker image from the Docker Hub public repository, or you can build it from scratch using our Dockerfile in the `root` directory.
 
-* Option 1(Faster): run pre-built Docker image in Docker Hub (navigate to `root` directory):
+* run pre-built Docker image in Docker Hub (navigate to `root` directory):
     ```shell
     docker run -it --env-file env.list --env-file installer/env.list -p 7489:7489 fraudmarc/fraudmarc-ce
     ```
-* Option 2: build, Docker image from `/Dockerfile` (the build process may take several minutes):
-    * Navigate to the directory containing the Fraudmarc CE docker image (`root` directory).
-
-    * Run the command to download and set up dependencies. This process may take several minutes
-
-    ```shell
-    docker build -t fraudmarc-ce .
-    ```
-
-    * Run the docker image
-
-    ```shell
-    docker run -it --env-file env.list -p 7489:7489 fraudmarc-ce
-    ```
-
 2. Your Fraudmarc CE installation is now ready at [http://localhost:7489](http://localhost:7489).
 
 ### 6. Create a DMARC policy:thumbsup:

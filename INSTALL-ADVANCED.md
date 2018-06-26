@@ -22,6 +22,16 @@ Here are the steps to setup Fraudmarc CE to collect and process DMARC data for y
 
 **Want DMARC data without complex cloud infrastructure? Try our [hosted DMARC service](https://www.fraudmarc.com/plans/).**
 
+### Install Git:thumbsup:
+
+1. Follow the link to install [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) , and configure the Git by checking this [link](https://help.github.com/articles/setting-your-username-in-git/).
+
+2. After installing the Git, you can use commands:arrow_down: to clone the fraudmarc CE project to your local machine (using [ssh](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/)):
+
+   ```shell
+   git clone git@github.com:Fraudmarc/fraudmarc-ce.git
+   ```
+
 ### Set Up Your Database:thumbsup:
 
 Instructions are for creating the database in AWS RDS. You are welcome to use any other PostgreSQL database server.
@@ -108,18 +118,6 @@ Instructions are for creating the database in AWS RDS. You are welcome to use an
 Follow the [Go Installation Steps](https://golang.org/doc/install) to install Go on your machine, and set the `GOPATH` via this [link](https://github.com/golang/go/wiki/SettingGOPATH)
 
 > You may want to export the path to `.bashrc` file
-
-### Install Git:thumbsup:
-
-1. Follow the link to install [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) , and configure the Git by checking this [link](https://help.github.com/articles/setting-your-username-in-git/).
-
-2. After installing the Git, you can use commands:arrow_down: to clone the fraudmarc CE project to your local machine:
-
-   ```shell
-   go get github.com/fraudmarc/fraudmarc-ce
-   ```
-
-
 
 ### Deploy Your Lambda Function:thumbsup:
 

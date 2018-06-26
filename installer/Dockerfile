@@ -50,7 +50,7 @@ CMD aws rds create-db-instance --db-name $REPORTING_DB_NAME --db-instance-identi
     && aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess --role-name FraudmarcCE \
     && aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/CloudWatchLogsFullAccess --role-name FraudmarcCE \
     && echo "Your IAM Role has been created! Check the AWS IAM Console (FraudmarcCE)" \
-    && aws lambda create-function \
+    && export PROCESS_ARN=$(aws lambda create-function \
     --region $AWS_DEFAULT_REGION \
     --function-name fraudmarc-ce-process \
     --memory 128 \
@@ -72,8 +72,8 @@ CMD aws rds create-db-instance --db-name $REPORTING_DB_NAME --db-instance-identi
     --runtime go1.x \
     --zip-file fileb://fraudmarc-ce-process.zip \
     --handler process \
-    | jq ".FunctionArn" | xargs -I {} \
-    aws lambda create-function \
+    | jq ".FunctionArn") \
+    && aws lambda create-function \
         --region $AWS_DEFAULT_REGION \
         --function-name fraudmarc-ce-receive \
         --memory 1536 \
@@ -85,7 +85,7 @@ CMD aws rds create-db-instance --db-name $REPORTING_DB_NAME --db-instance-identi
           ARTable=$ARTable, \
           BUCKET_NAME=$BUCKET_NAME, \
           DRE_TABLE=$DRE_TABLE, \
-          ArnLambdaDmarcARResolveBulk={}, \
+          ArnLambdaDmarcARResolveBulk=$PROCESS_ARN, \
           REPORTING_DB_NAME=$REPORTING_DB_NAME, \
           REPORTING_DB_USER=$REPORTING_DB_USER, \
           REPORTING_DB_PASSWORD=$REPORTING_DB_PASSWORD, \
@@ -97,7 +97,7 @@ CMD aws rds create-db-instance --db-name $REPORTING_DB_NAME --db-instance-identi
         --zip-file fileb://fraudmarc-ce-receive.zip \
         --handler receive \
         | jq ".FunctionArn" | xargs -I {} \
-        sed -i 's/ARN/{}/g' inline-policy.json \
+        sed -i "s/ARN/$PROCESS_ARN/g" inline-policy.json \
         && echo "Your Lambda functions have been created! Check the AWS Lambda Console (fraudmarc-ce-receive/process)" \
         && aws iam put-role-policy --role-name FraudmarcCE --policy-name invokeProcessLambda --policy-document file:///inline-policy.json \
         && echo "Your inline-policy has been added to the FraudmarcCE role! Check the IAM Console" \

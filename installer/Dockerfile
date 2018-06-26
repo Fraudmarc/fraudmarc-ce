@@ -25,10 +25,12 @@ RUN go get \
     github.com/fraudmarc/fraudmarc-ce/database \
     golang.org/x/text/encoding
 WORKDIR /receive
-RUN GOOS=linux go build
+RUN CGO_ENABLED=0 GOOS=linux \
+    go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o receive .
 RUN zip ../fraudmarc-ce-receive.zip ./receive
 WORKDIR /process
-RUN GOOS=linux go build
+RUN CGO_ENABLED=0 GOOS=linux \
+    go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o process .
 RUN zip ../fraudmarc-ce-process.zip ./process
 
 FROM alpine as installer

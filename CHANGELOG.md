@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.0.4] - 2018-07-30
 ### Added
-- CHANGELOG containing information on releases
+- CHANGELOG containing information on releases by @AbigailCliche
 
 ## [0.0.3] - 2018-07-12
 ### Changed

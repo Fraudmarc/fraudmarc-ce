@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.0.4] - 2018-07-30
+### Added
+- CHANGELOG containing information on releases
+
 ## [0.0.3] - 2018-07-12
 ### Changed
 - Angular package version updates

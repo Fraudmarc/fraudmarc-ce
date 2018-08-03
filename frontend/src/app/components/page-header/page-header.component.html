@@ -12,8 +12,19 @@
 
   <div class="header">
     <div class="title">
-      <div class="maintitle">{{title}}</div>
-      <div class="subtitle">{{subtitle}}</div>
+      <div fxLayout = "row" fxLayoutAlign = "space-between">
+        <div>
+          <div class="maintitle">{{title}}</div>
+          <div class="subtitle">{{subtitle}}</div>
+        </div>
+        <div (mouseover)= "show()">
+          <br>
+          You can have more features on <a href="https://www.fraudmarc.com/" target="_blank">our product</a>!
+          <br>   
+        </div>
+      </div>
+      
+      
     </div>
     <div class="home"
          (click)="homeAction()"
@@ -23,4 +34,17 @@
            height="40px" />
     </div>
   </div>
+
+  
 </div>
+<mat-card *ngIf="showFeature">
+    <button mat-icon-button (click)="hide()" style = "float: right">
+    <mat-icon>cancel</mat-icon>
+  </button>
+  <br>
+  <mat-grid-list cols="4" rowHeight="100px">
+    <mat-grid-tile *ngFor="let element of featureList">
+      {{element}}
+    </mat-grid-tile>
+  </mat-grid-list>
+</mat-card>

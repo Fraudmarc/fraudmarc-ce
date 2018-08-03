@@ -14,14 +14,43 @@ export class PageHeaderComponent implements OnInit {
   @Input() action: string;
   @Output() onaction = new EventEmitter<void>();
 
+  public showFeature: boolean;
+  public featureList: string[];
   constructor(private router: Router) {}
 
-  ngOnInit(): void { }
+  ngOnInit() {
+    this.showFeature = false;
+    this.featureList = [
+      'SPF CompressionSM',
+      'SPF Editor',
+      'DMARC Editor ',
+      'STS Editor',
+      'Senders Reports',
+      'SPF History',
+      'Failure Reports',
+      'IP Intelligence: identifies major Sender by IP',
+      'IP Reputation: identifies blacklisted IPs',
+      'Risk Analysis',
+      'Auto Reject',
+      'Sender suggestions & one-click policy editing- within Senders Reports',
+      'Instant setup Integration- for GoDaddy and Cloudflare domains',
+      'Domain Dashboard features: quick view information, List View, sort, filters',
+      'SPF Sparkline',
+      'DKIM Manager'
+    ];
+  }
 
  homeAction () {
    if (!this.nonav) {
      this.router.navigate(['']);
    }
+ }
+
+ show() {
+   this.showFeature = true;
+ }
+ hide() {
+   this.showFeature = false;
  }
 
 }

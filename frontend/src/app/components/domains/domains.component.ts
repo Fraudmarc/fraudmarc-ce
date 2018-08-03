@@ -6,7 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { MediaChangeService } from '../../services/media-change.service';
-import { DmarcService } from '../../services/dmarc.service'
+import { DmarcService } from '../../services/dmarc.service';
 
 
 

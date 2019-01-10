@@ -11,7 +11,7 @@
 
 # Fraudmarc Community Edition :fire: :fire: :fire:
 
-Fraudmarc CE is a secure and scalable system to analyze DMARC data. It is designed for government agencies that must adhere to strict data control policies.
+Fraudmarc CE is a secure and scalable system for analysing DMARC data. It is designed for government agencies that must adhere to strict data control policies.
 
 *Fraudmarc's [DMARC service](https://www.fraudmarc.com/plans/) provides an easier way for businesses to manage email authentication.*
 
@@ -25,6 +25,7 @@ Discover all sources of email sent from your domain.
 
 Fraudmarc CE runs on AWS or AWS GovCloud plus a local Docker image.
 
+Fraudmarc allows one to:
 - Receive DMARC reports on AWS Simple Email Service
 - Use serverless Lambda functions to process the reports
 - Store the processed data in Aurora PostgreSQL, RDS PostgreSQL, or any other PostgreSQL DB

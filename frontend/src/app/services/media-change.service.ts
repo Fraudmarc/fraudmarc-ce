@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { MediaChange, ObservableMedia } from '@angular/flex-layout';
+import { MediaChange, MediaObserver } from '@angular/flex-layout';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
@@ -9,9 +9,9 @@ export class MediaChangeService {
 
   public media =  new BehaviorSubject<string>('xs');
 
-  constructor(mediaObserver: ObservableMedia) {
-    mediaObserver.subscribe((change: MediaChange) => {
-        this.media.next(change.mqAlias);
+  constructor(mediaObserver: MediaObserver) {
+    mediaObserver.media$.subscribe((change: MediaChange) => {
+      this.media.next(change.mqAlias);
     });
   }
 }

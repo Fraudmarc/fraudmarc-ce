@@ -42,7 +42,7 @@ COPY --from=builder /fraudmarc-ce-receive.zip /fraudmarc-ce-process.zip /
 COPY /installer/lambda-assume-policy.json / 
 COPY /installer/inline-policy.json /
 CMD aws rds create-db-instance --db-name $REPORTING_DB_NAME --db-instance-identifier $REPORTING_DB_IDENTIFIER \
-        --allocated-storage 20 --db-instance-class db.t2.micro --engine postgres --master-username $REPORTING_DB_USER \
+        --allocated-storage 20 --db-instance-class db.t3.micro --engine postgres --master-username $REPORTING_DB_USER \
         --master-user-password $REPORTING_DB_PASSWORD > /dev/null \
     && echo "Your Database has been launched! Check the AWS RDS Console -> Instances tab (fraudmarcce)" \
     && export AWS_ROLE_ARN=$(aws iam create-role --role-name FraudmarcCE --assume-role-policy-document file:///lambda-assume-policy.json \

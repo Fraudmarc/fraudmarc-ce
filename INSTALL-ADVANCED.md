@@ -1,6 +1,6 @@
 <img src="25Fraudmarc-CE-Logo-on-Light.png" alt="logo">
 
-# Installation Guide for Fraudmarc Community Edition :fire: :fire: :fire:
+# Installation Guide for Fraudmarc Community Edition
 
 Here are the steps to setup Fraudmarc CE to collect and process DMARC data for your domain(s). 
 
@@ -127,7 +127,7 @@ Follow the [Go Installation Steps](https://golang.org/doc/install) to install Go
    sudo apt install curl
    ```
 
-2. Follow the [APEX](http://apex.run/) instructions to install apex.
+2. Follow the [APEX](https://github.com/Fraudmarc/apex) instructions to install apex.
 
 3. Follow the [AWS Credentials](https://docs.aws.amazon.com/general/latest/gr/managing-aws-access-keys.html) to generate access key and ID.
 

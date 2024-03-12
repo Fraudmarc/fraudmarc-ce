@@ -1,4 +1,4 @@
-![Fraudmarc CE Logo](https://github.com/Fraudmarc/fraudmarc-ce/blob/master/25Fraudmarc-CE-Logo-on-Light.png) [![Build Status](https://travis-ci.org/Fraudmarc/fraudmarc-ce.svg?branch=master)](https://travis-ci.org/Fraudmarc/fraudmarc-ce)
+![Fraudmarc CE Logo](https://github.com/Fraudmarc/fraudmarc-ce/blob/master/25Fraudmarc-CE-Logo-on-Light.png)
 
 - **Built for government agencies**
 - **100%** Control of your data
@@ -9,7 +9,7 @@
 
 #
 
-# Fraudmarc Community Edition :fire: :fire: :fire:
+# Fraudmarc Community Edition
 
 Fraudmarc CE is a secure and scalable system to analyze DMARC data. It is designed for government agencies that must adhere to strict data control policies.
 

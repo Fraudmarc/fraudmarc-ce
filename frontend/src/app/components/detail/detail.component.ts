@@ -1,8 +1,8 @@
 import { DatePipe } from '@angular/common';
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
+import { MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
+import { MatLegacyPaginator as MatPaginator } from '@angular/material/legacy-paginator';
+import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
 import { countries } from '../../../assets/simple-countries';
 import { directCopy } from '../../app.utilities';
 import { DomainDmarcDetailDataProvider, IDMARCReportDetailRecord, DashWhenEmptyStringPipe } from '../../services/dmarc.service';

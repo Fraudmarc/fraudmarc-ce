@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { EventEmitter, Injectable, Pipe, PipeTransform } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
 
 export class DomainDmarcDataProvider {
   public onData = new EventEmitter<void>();

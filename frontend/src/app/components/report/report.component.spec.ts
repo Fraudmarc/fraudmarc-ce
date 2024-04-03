@@ -8,8 +8,9 @@ describe('ReportComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ReportComponent ]
-    })
+    declarations: [ReportComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

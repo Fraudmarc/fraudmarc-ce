@@ -8,8 +8,9 @@ describe('DateRangeComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DateRangeComponent ]
-    })
+    declarations: [DateRangeComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

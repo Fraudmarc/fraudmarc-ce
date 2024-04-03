@@ -1,4 +1,4 @@
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 h1#page-title {
   color: mat.get-contrast-color-from-palette($candy-app-primary, 500);
   background-color: mat.get-color-from-palette($candy-app-primary);

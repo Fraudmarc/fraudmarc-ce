@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { MediaChange, ObservableMedia } from '@angular/flex-layout';
+import { MediaChange, MediaObserver } from '@angular/flex-layout';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
@@ -7,11 +7,13 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class MediaChangeService {
 
-  public media =  new BehaviorSubject<string>('xs');
+  public media = new BehaviorSubject<string>('xs');
 
-  constructor(mediaObserver: ObservableMedia) {
-    mediaObserver.subscribe((change: MediaChange) => {
-        this.media.next(change.mqAlias);
+  constructor(mediaObserver: MediaObserver) {
+    mediaObserver.asObservable().subscribe((changes: MediaChange[]) => {
+        // Assuming you want to handle the last change if multiple changes are emitted at once
+        const lastChange = changes[changes.length - 1];
+        this.media.next(lastChange.mqAlias);
     });
   }
 }

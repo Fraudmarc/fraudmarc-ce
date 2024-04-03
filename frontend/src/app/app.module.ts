@@ -48,7 +48,6 @@ import { DashWhenEmptyStringPipe, DmarcService} from './services/dmarc.service';
 import { PageHeaderComponent } from './components/page-header/page-header.component';
 import { SearchboxComponent } from './components/searchbox/searchbox.component';
 import { DateRangeComponent } from './components/date-range/date-range.component';
-import { LineChartComponent } from './components/line-chart/line-chart.component';
 import { ReportComponent } from './components/report/report.component';
 import { DetailComponent } from './components/detail/detail.component';
 import { ProgressPanelComponent } from './components/progress-panel/progress-panel.component';
@@ -63,7 +62,6 @@ import { ProgressPanelComponent } from './components/progress-panel/progress-pan
     PageHeaderComponent,
     SearchboxComponent,
     DateRangeComponent,
-    LineChartComponent,
     ReportComponent,
     DetailComponent,
     ProgressPanelComponent,

@@ -1,6 +1,6 @@
 <img src="25Fraudmarc-CE-Logo-on-Light.png" alt="logo">
 
-# Installation Guide for Fraudmarc Community Edition :fire: :fire: :fire:
+# Installation Guide for Fraudmarc Community Edition
 
 Here are the steps to setup Fraudmarc CE to collect and process DMARC data for your domain(s). 
 

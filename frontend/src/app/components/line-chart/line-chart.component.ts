@@ -76,8 +76,8 @@ export class LineChartComponent extends BaseChartComponent {
   @Output() activate: EventEmitter<any> = new EventEmitter();
   @Output() deactivate: EventEmitter<any> = new EventEmitter();
 
-  @ContentChild('tooltipTemplate') tooltipTemplate: TemplateRef<any>;
-  @ContentChild('seriesTooltipTemplate') seriesTooltipTemplate: TemplateRef<any>;
+  @ContentChild('tooltipTemplate', /* TODO: add static flag */ {}) tooltipTemplate: TemplateRef<any>;
+  @ContentChild('seriesTooltipTemplate', /* TODO: add static flag */ {}) seriesTooltipTemplate: TemplateRef<any>;
 
   dims: ViewDimensions;
   xSet: any;

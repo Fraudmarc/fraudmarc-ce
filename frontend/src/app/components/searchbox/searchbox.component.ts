@@ -9,8 +9,8 @@ import { timer } from 'rxjs';
 })
 export class SearchboxComponent implements OnInit {
 
-  @ViewChild('container') container: any;
-  @ViewChild('search') search: any;
+  @ViewChild('container', { static: true }) container: any;
+  @ViewChild('search', { static: true }) search: any;
 
   @Input() placeholder: string;
   @Input() color: string;

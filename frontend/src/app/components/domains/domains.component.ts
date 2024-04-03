@@ -17,7 +17,7 @@ import { DmarcService } from '../../services/dmarc.service';
 })
 
 export class DomainsComponent implements OnInit, DoCheck {
-    @ViewChild('filter') filter: ElementRef;
+    @ViewChild('filter', { static: false }) filter: ElementRef;
     domainListOrigin: String[] = [];
     domainList: String[] = [];
 

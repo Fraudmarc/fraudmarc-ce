@@ -27,7 +27,6 @@
     "@swimlane/ngx-charts": "^8.1.0",
     "@swimlane/ngx-datatable": "^13.0.1",
     "core-js": "^2.5.7",
-    "hammerjs": "^2.0.8",
     "rxjs": "^7.8.1",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2"

@@ -1,6 +1,8 @@
 import { DatePipe } from '@angular/common';
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef, MatPaginator, MatTableDataSource } from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 import { countries } from '../../../assets/simple-countries';
 import { directCopy } from '../../app.utilities';
 import { DomainDmarcDetailDataProvider, IDMARCReportDetailRecord, DashWhenEmptyStringPipe } from '../../services/dmarc.service';

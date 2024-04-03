@@ -45,7 +45,7 @@ export class DetailComponent implements OnInit {
     'po_comment'
   ];
 
-  @ViewChild('pager', { static: false }) set pager(paginator: MatPaginator) { this.dataProvider.DetailDataSource.paginator = paginator; }
+  @ViewChild('pager') set pager(paginator: MatPaginator) { this.dataProvider.DetailDataSource.paginator = paginator; }
 
   ngOnInit(): void {
     this.loading = true;

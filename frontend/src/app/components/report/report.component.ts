@@ -64,7 +64,7 @@ export class ReportComponent implements OnInit {
     private dialog: MatDialog,
   ) { }
 
-  @ViewChild('pager', { static: false })
+  @ViewChild('pager')
   set pager(paginator: MatPaginator) {
     if (paginator) {
       this.summaryDataProvider.summaryDataSource.paginator = paginator;

@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, Renderer2, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { timer } from 'rxjs';
 
 @Component({
@@ -21,7 +21,7 @@ export class SearchboxComponent implements OnInit {
   @Output() valueChange = new EventEmitter<string>();
   @Output() onSubmit = new EventEmitter<string>();
 
-  public searchControl = new FormControl('');
+  public searchControl = new UntypedFormControl('');
 
   public hasFocus: boolean;
   public hasValue: boolean;

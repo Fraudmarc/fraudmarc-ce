@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, DoCheck, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
@@ -22,7 +22,7 @@ export class DomainsComponent implements OnInit, DoCheck {
     domainList: String[] = [];
 
 
-    public domainInput = new FormControl();
+    public domainInput = new UntypedFormControl();
     public columnCount$ = new BehaviorSubject<number>(1);
 
     public user: string;

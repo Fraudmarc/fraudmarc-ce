@@ -28,7 +28,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-sdk-go/service/sns"
 	"github.com/fraudmarc/fraudmarc-ce/backend/lib"
-	db "github.com/fraudmarc/fraudmarc-ce/database"
 	"github.com/lib/pq"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/text/encoding/charmap"
@@ -69,7 +68,7 @@ type AddrNames struct {
 	Names []string
 }
 
-//DmarcReportPrepareAttachment unzip the dmarc report data, and return the decompressed xml
+// DmarcReportPrepareAttachment unzip the dmarc report data, and return the decompressed xml
 func DmarcReportPrepareAttachment(f io.Reader) (io.Reader, error) {
 
 	m, err := mail.ReadMessage(f)
@@ -198,7 +197,7 @@ func DmarcReportPrepareAttachment(f io.Reader) (io.Reader, error) {
 	return nil, fmt.Errorf("PrepareAttachment: reached the end, no attachment found.")
 }
 
-//parse: decode the dmarc report xml file and update five tables in five go routines
+// parse: decode the dmarc report xml file and update five tables in five go routines
 func parse(r io.Reader, messageId string) {
 
 	var wg sync.WaitGroup
@@ -234,11 +233,11 @@ func parse(r io.Reader, messageId string) {
 	log.Println("domain   : ", fb.Domain)
 	log.Println("messageId: ", messageId)
 
-	txnAR, _ := db.DB.Begin()
-	txnARR, _ := db.DB.Begin()
-	txnDKIM, _ := db.DB.Begin()
-	txnSPF, _ := db.DB.Begin()
-	txnPO, _ := db.DB.Begin()
+	txnAR, _ := lib.DB.Begin()
+	txnARR, _ := lib.DB.Begin()
+	txnDKIM, _ := lib.DB.Begin()
+	txnSPF, _ := lib.DB.Begin()
+	txnPO, _ := lib.DB.Begin()
 
 	fmt.Fprintln(os.Stderr, "parsed, starting DB transfer...")
 
@@ -333,7 +332,7 @@ func parse(r io.Reader, messageId string) {
 
 } // parse
 
-//ExtractFile extracts first file from zip archive
+// ExtractFile extracts first file from zip archive
 func ExtractZipFile(r io.Reader) (io.ReadCloser, error) {
 	buf := new(bytes.Buffer)
 	_, err := io.Copy(buf, r)
@@ -366,7 +365,7 @@ func makeCharsetReader(charset string, input io.Reader) (io.Reader, error) {
 func writeToAggregateReport(rx chan lib.AggregateReport, waitgroup *sync.WaitGroup, txn *sql.Tx) {
 	defer waitgroup.Done()
 
-	stmt, err := txn.Prepare(pq.CopyInSchema("public", db.ARTable,
+	stmt, err := txn.Prepare(pq.CopyInSchema("public", lib.ARTable,
 		"MessageId",
 		"Organization",
 		"Email",
@@ -417,7 +416,7 @@ func writeToAggregateReport(rx chan lib.AggregateReport, waitgroup *sync.WaitGro
 func writeToAggregateReportRecord(rx chan lib.AggregateReportRecord, waitgroup *sync.WaitGroup, txn *sql.Tx) {
 	defer waitgroup.Done()
 
-	stmt, err := txn.Prepare(pq.CopyInSchema("public", db.ARRTable,
+	stmt, err := txn.Prepare(pq.CopyInSchema("public", lib.ARRTable,
 		"AggregateReport_id",
 		"RecordNumber",
 		"SourceIP",
@@ -556,7 +555,7 @@ func writeToPoReason(rx chan lib.POReason, waitgroup *sync.WaitGroup, txn *sql.T
 	}
 }
 
-//ParseDmarcReportBulk invokes the lambda function used to update dmarc_reporting_entries table
+// ParseDmarcReportBulk invokes the lambda function used to update dmarc_reporting_entries table
 func ParseDmarcReportBulk(messageID string, firstRecord int) {
 
 	prepLambdaSession()
@@ -574,7 +573,7 @@ func ParseDmarcReportBulk(messageID string, firstRecord int) {
 		Payload:        buf,
 	}
 
-	_, errInvoke := db.SvcLambda.Invoke(&invokeInput)
+	_, errInvoke := lib.SvcLambda.Invoke(&invokeInput)
 	if errInvoke != nil {
 		log.Println("Failed to invoke DRE update bulk lambda: ", errInvoke)
 	}
@@ -584,16 +583,16 @@ func ParseDmarcReportBulk(messageID string, firstRecord int) {
 func prepLambdaSession() AWSSettings {
 
 	// new AWS session for S3 operations:
-	db.AwsConfig.Region = aws.String(db.LambdaRegion)
-	db.Sess = session.New(&db.AwsConfig)
-	db.SvcLambda = lambda.New(db.Sess)
-	db.SessionReady = true
+	lib.AwsConfig.Region = aws.String(lib.LambdaRegion)
+	lib.Sess = session.New(&lib.AwsConfig)
+	lib.SvcLambda = lambda.New(lib.Sess)
+	lib.SessionReady = true
 
 	return AWSSettings{
-		Region:       db.AwsConfig.Region,
-		Session:      db.Sess,
-		SvcLambda:    db.SvcLambda,
-		SessionReady: db.SessionReady,
+		Region:       lib.AwsConfig.Region,
+		Session:      lib.Sess,
+		SvcLambda:    lib.SvcLambda,
+		SessionReady: lib.SessionReady,
 	}
 
 }

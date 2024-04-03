@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/fraudmarc/fraudmarc-ce/backend/lib"
-	db "github.com/fraudmarc/fraudmarc-ce/database"
 
 	"context"
 
@@ -21,7 +20,7 @@ import (
 	"golang.org/x/net/html/charset"
 )
 
-//ARBulkInput structure of request parameters
+// ARBulkInput structure of request parameters
 type ARBulkInput struct {
 	Params struct {
 		RecordStart int    `json:"first_record"`
@@ -76,12 +75,12 @@ func main() {
 
 		fb.MessageId = q.Params.MessageID
 		//TODO: Error checking
-		if db.DB == nil || db.DB.Ping() != nil {
-			db.DBreporting = db.GetTheRunner("REPORTING")
-			db.DB = db.DBreporting.DB.DB
+		if lib.DB == nil || lib.DB.Ping() != nil {
+			lib.DBreporting = lib.GetTheRunner("REPORTING")
+			lib.DB = lib.DBreporting.DB.DB
 		}
 
-		recordStop := q.Params.RecordStart + db.RecordChunk
+		recordStop := q.Params.RecordStart + lib.RecordChunk
 		if recordStop > len(fb.Records) {
 			recordStop = len(fb.Records)
 		}

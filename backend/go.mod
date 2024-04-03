@@ -3,11 +3,13 @@ module github.com/fraudmarc/fraudmarc-ce/backend
 go 1.22.1
 
 require (
+	github.com/aws/aws-lambda-go v1.46.0
 	github.com/aws/aws-sdk-go v1.51.13
 	github.com/gorilla/mux v1.8.1
 	github.com/lib/pq v1.10.9
 	github.com/mgutz/dat v1.1.10-0.20201025073301-cb4418b79023
 	golang.org/x/net v0.22.0
+	golang.org/x/text v0.14.0
 )
 
 require (

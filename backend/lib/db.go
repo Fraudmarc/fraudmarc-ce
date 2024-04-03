@@ -1,4 +1,4 @@
-package database
+package lib
 
 import (
 	"database/sql"
@@ -14,8 +14,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-sdk-go/service/sns"
-	dat "gopkg.in/mgutz/dat.v1"
-	runner "gopkg.in/mgutz/dat.v1/sqlx-runner"
+	"github.com/mgutz/dat/dat"
+	runner "github.com/mgutz/dat/sqlx-runner"
 )
 
 type DBConnectInfo struct {

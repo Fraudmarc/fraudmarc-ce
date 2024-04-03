@@ -5,8 +5,6 @@ import (
 	"log"
 	"os"
 	"time"
-
-	db "github.com/fraudmarc/fraudmarc-ce/database"
 )
 
 type daily struct {
@@ -14,7 +12,7 @@ type daily struct {
 	Series []Volume `json:"series"`
 }
 
-//Volume Name is the timestamp, Value is the pass/fail quantity on that day
+// Volume Name is the timestamp, Value is the pass/fail quantity on that day
 type Volume struct {
 	Name  int64 `json:"name"`
 	Value int64 `json:"value"`
@@ -25,7 +23,7 @@ type chartReturn struct {
 	Domain    string  `json:"domain"`
 }
 
-//ChartContainer structure of result
+// ChartContainer structure of result
 type ChartContainer struct {
 	Full []result `json:"full"`
 	Pass []result `json:"pass"`
@@ -84,7 +82,7 @@ func GetDmarcChartData(start, end, domain string) (chartReturn, error) {
 	return retVal, err
 }
 
-//GetDmarcDatedWeeklyChart returns the weekly dmarc data
+// GetDmarcDatedWeeklyChart returns the weekly dmarc data
 func GetDmarcDatedWeeklyChart(domain string, start, end int64) (ChartContainer, error) {
 	var chart ChartContainer
 
@@ -149,7 +147,7 @@ func getDmarcDailyAll(domain string, timeBegin, timeEnd int64) ([]*DmarcDailyBuc
 
 	fmt.Fprintf(os.Stderr, "days calculated: %d", days)
 
-	tx, err := db.DBreporting.Begin()
+	tx, err := DBreporting.Begin()
 	defer tx.AutoCommit()
 	if err != nil {
 		return results, err

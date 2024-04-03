@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/fraudmarc/fraudmarc-ce/backend/lib"
-	db "github.com/fraudmarc/fraudmarc-ce/database"
 	"github.com/gorilla/mux"
 )
 
@@ -33,7 +32,7 @@ type result []interface{}
 
 func main() {
 	var reports []lib.AggregateReport
-	err := db.DBreporting.SQL(`
+	err := lib.DBreporting.SQL(`
 		select * from "AggregateReport"`).QueryStructs(&reports)
 	if err != nil {
 		log.Fatal(err)

@@ -33,10 +33,6 @@ type DBHandle struct {
 	defaultConnections int
 }
 
-const (
-	fmRegionUSEastOne = "us-east-1"
-)
-
 var (
 	DB       *sql.DB
 	ARRTable = os.Getenv("ARRTable")
@@ -63,8 +59,8 @@ var (
 	SvcSNS       *sns.SNS
 	SvcLambda    *lambda.Lambda
 
-	SnsRegion    = fmRegionUSEastOne
-	LambdaRegion = fmRegionUSEastOne
+	SnsRegion    = os.Getenv("AWS_REGION")
+	LambdaRegion = os.Getenv("AWS_REGION")
 	DreTable     = "dmarc_reporting_entries"
 	RecordChunk  = 10000
 	AwsConfig    = aws.Config{

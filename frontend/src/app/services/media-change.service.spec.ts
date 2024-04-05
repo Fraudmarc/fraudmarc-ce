@@ -5,8 +5,9 @@ import { MediaChangeService } from './media-change.service';
 describe('MediaChangeService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [MediaChangeService]
-    });
+    providers: [MediaChangeService],
+    teardown: { destroyAfterEach: false }
+});
   });
 
   it('should be created', inject([MediaChangeService], (service: MediaChangeService) => {

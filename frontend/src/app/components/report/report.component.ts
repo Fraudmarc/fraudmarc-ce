@@ -1,12 +1,9 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  MatDialog,
-  MatDialogConfig,
-  MatPaginator,
-  MatTableDataSource
-} from '@angular/material';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogConfig as MatDialogConfig } from '@angular/material/legacy-dialog';
+import { MatLegacyPaginator as MatPaginator } from '@angular/material/legacy-paginator';
+import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
 import { IDateRange, directCopy, getlast30DayRange } from '../../app.utilities';
 import { DetailComponent } from '../detail/detail.component';
 import {

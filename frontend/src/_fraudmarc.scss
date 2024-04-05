@@ -1,6 +1,7 @@
+@use '@angular/material' as mat;
 h1#page-title {
-  color: mat-contrast($candy-app-primary, 500);
-  background-color: mat-color($candy-app-primary);
+  color: mat.get-contrast-color-from-palette($candy-app-primary, 500);
+  background-color: mat.get-color-from-palette($candy-app-primary);
   font-size: 30px;
   font-weight: 300;
   margin: -32px -32px 32px -32px;

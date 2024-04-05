@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { SearchboxComponent } from './searchbox.component';
 
@@ -6,10 +6,11 @@ describe('SearchboxComponent', () => {
   let component: SearchboxComponent;
   let fixture: ComponentFixture<SearchboxComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SearchboxComponent ]
-    })
+    declarations: [SearchboxComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

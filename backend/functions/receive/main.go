@@ -84,11 +84,14 @@ func main() {
 		}
 
 		svc := s3.New(session.New())
+
 		bucket_name := os.Getenv("BUCKET_NAME")
+		bucket_prefix := os.Getenv("BUCKET_PREFIX")
+		object_key := bucket_prefix + q.Records[0].SES.Mail.MessageID
 
 		params := &s3.GetObjectInput{
-			Bucket: aws.String(bucket_name),                     // Required
-			Key:    aws.String(q.Records[0].SES.Mail.MessageID), // Required
+			Bucket: aws.String(bucket_name), // Required
+			Key:    aws.String(object_key),  // Required
 		}
 		resp, err := svc.GetObject(params)
 
@@ -99,7 +102,7 @@ func main() {
 			return nil, err
 		}
 
-		log.Println("message id:  ", q.Records[0].SES.Mail.MessageID)
+		log.Println("message id:  ", object_key)
 
 		// Pretty-print the response data.
 		m, err := DmarcReportPrepareAttachment(resp.Body)
@@ -107,10 +110,10 @@ func main() {
 			panic(err)
 		}
 
-		parse(m, q.Records[0].SES.Mail.MessageID)
+		parse(m, object_key)
 
 		spf.Description = "dummy struct is used"
-		log.Println("q.Records[0].SES.Mail.MessageID:  ", q.Records[0].SES.Mail.MessageID)
+		log.Println("object_key:  ", object_key)
 
 		return spf, nil
 	})

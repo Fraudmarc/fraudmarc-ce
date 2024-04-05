@@ -29,7 +29,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-sdk-go/service/sns"
 	"github.com/fraudmarc/fraudmarc-ce/backend/lib"
-	db "github.com/fraudmarc/fraudmarc-ce/database"
 	"github.com/lib/pq"
 )
 
@@ -48,20 +47,20 @@ type revIP4 struct {
 	String string
 }
 
-//DmarcARRContext structure of updating ARR table in txn
+// DmarcARRContext structure of updating ARR table in txn
 type DmarcARRContext struct {
 	Txn  *sql.Tx
 	Stmt *sql.Stmt
 	Lock sync.Mutex
 }
 
-//AddrNames includes address and its names array
+// AddrNames includes address and its names array
 type AddrNames struct {
 	Addr  string
 	Names []string
 }
 
-//AWSSettings sets up the aws comfiguration
+// AWSSettings sets up the aws comfiguration
 type AWSSettings struct {
 	Region       *string
 	Session      *session.Session
@@ -70,7 +69,7 @@ type AWSSettings struct {
 	SessionReady bool
 }
 
-//PrepareAttachment unzip the dmarc report data, and return the decompressed xml
+// PrepareAttachment unzip the dmarc report data, and return the decompressed xml
 func PrepareAttachment(f io.Reader) (io.Reader, error) {
 	//read f and redurns the message, m as type Message
 	m, err := mail.ReadMessage(f)
@@ -200,7 +199,7 @@ func PrepareAttachment(f io.Reader) (io.Reader, error) {
 	return nil, fmt.Errorf("prepareAttachment: reached the end, no attachment found")
 }
 
-//ExtractZipFile extracts first file from zip archive.
+// ExtractZipFile extracts first file from zip archive.
 func ExtractZipFile(r io.Reader) (io.ReadCloser, error) {
 
 	//create a buffer and copy r to it
@@ -226,13 +225,13 @@ func ExtractZipFile(r io.Reader) (io.ReadCloser, error) {
 	return zip.File[0].Open()
 }
 
-//Open begins a database transaction
+// Open begins a database transaction
 func (d *DmarcARRContext) Open() (err error) {
-	d.Txn, err = db.DB.Begin()
+	d.Txn, err = lib.DB.Begin()
 	return
 }
 
-//Close ends a database transaction
+// Close ends a database transaction
 func (d *DmarcARRContext) Close() (err error) {
 	if d.Stmt != nil {
 		d.Stmt.Close()
@@ -244,7 +243,7 @@ func (d *DmarcARRContext) Close() (err error) {
 	return
 }
 
-//GetStmtLockIfEmpty returns statement of a DmarcARRContext and locks if statement is empty
+// GetStmtLockIfEmpty returns statement of a DmarcARRContext and locks if statement is empty
 func (d *DmarcARRContext) GetStmtLockIfEmpty() *sql.Stmt {
 
 	if d.Stmt != nil {
@@ -261,7 +260,7 @@ func (d *DmarcARRContext) GetStmtLockIfEmpty() *sql.Stmt {
 
 }
 
-//ResolveAddrNames returns a struct containging an address and a list of names mapping to it
+// ResolveAddrNames returns a struct containging an address and a list of names mapping to it
 func ResolveAddrNames(addr string) (addrNames AddrNames, err error) {
 
 	addrNames = AddrNames{
@@ -278,7 +277,7 @@ func ResolveAddrNames(addr string) (addrNames AddrNames, err error) {
 	return
 }
 
-//ParseDmarcReportBulk invokes the lambda function updating DMR table
+// ParseDmarcReportBulk invokes the lambda function updating DMR table
 func ParseDmarcReportBulk(messageID string, firstRecord int) {
 	//prepare aws lambda session for S3 operations
 	prepLambdaSession()
@@ -296,33 +295,33 @@ func ParseDmarcReportBulk(messageID string, firstRecord int) {
 		Payload:        buf,
 	}
 
-	_, errInvoke := db.SvcLambda.Invoke(&invokeInput)
+	_, errInvoke := lib.SvcLambda.Invoke(&invokeInput)
 	if errInvoke != nil {
 		log.Println("Failed to invoke DRE update bulk lambda: ", errInvoke)
 	}
 
 }
 
-//PrepLambdaSession configures a lambda session
+// PrepLambdaSession configures a lambda session
 func prepLambdaSession() AWSSettings {
 
 	// new AWS session for S3 operations:
-	db.AwsConfig.Region = aws.String(db.LambdaRegion)
-	db.Sess = session.New(&db.AwsConfig)
-	db.SvcLambda = lambda.New(db.Sess)
-	db.SessionReady = true
+	lib.AwsConfig.Region = aws.String(lib.LambdaRegion)
+	lib.Sess = session.New(&lib.AwsConfig)
+	lib.SvcLambda = lambda.New(lib.Sess)
+	lib.SessionReady = true
 
 	return AWSSettings{
-		Region:       db.AwsConfig.Region,
-		Session:      db.Sess,
-		SvcLambda:    db.SvcLambda,
-		SessionReady: db.SessionReady,
+		Region:       lib.AwsConfig.Region,
+		Session:      lib.Sess,
+		SvcLambda:    lib.SvcLambda,
+		SessionReady: lib.SessionReady,
 	}
 
 }
 
-//ParseDmarcARRParallel uses the parse result of decoding xml and aggregate the information from senderdomain
-//and reverse ip look up result to update the dmarc_reporting_entries table
+// ParseDmarcARRParallel uses the parse result of decoding xml and aggregate the information from senderdomain
+// and reverse ip look up result to update the dmarc_reporting_entries table
 func ParseDmarcARRParallel(lookupPoolSize, dbReadPoolSize int, fb lib.AggregateReport) (chan *lib.AggregateReportRecord, *sync.WaitGroup) {
 
 	var i int
@@ -503,7 +502,7 @@ func ipIntelLookup10FillDRF(ipMap map[string][]*lib.DmarcReportingFull, ipsbStmt
 	return
 }
 
-//SenderbaseIPData query the senderbase to find out the org name of ip
+// SenderbaseIPData query the senderbase to find out the org name of ip
 func SenderbaseIPData(sip string) (sbGeo lib.SBGeo, err error) {
 
 	// convert from string input to net.IP:
@@ -571,7 +570,7 @@ func SenderbaseIPData(sip string) (sbGeo lib.SBGeo, err error) {
 	return
 }
 
-//ByteReverseIP4 translates an IP4 into reverse byte order
+// ByteReverseIP4 translates an IP4 into reverse byte order
 func byteReverseIP4(ip net.IP) (revip revIP4) {
 
 	for j := 0; j < len(ip); j++ {
@@ -591,7 +590,7 @@ func writeToDmarcReportingFull(dr lib.DmarcReportingFull, txn *sql.Tx, ctx *Dmar
 	var errPrepare error
 
 	if ctx == nil || ctx.GetStmtLockIfEmpty() == nil { //Prepare a statement if we have no repeat context, or it's empty
-		stmt, errPrepare = txn.Prepare(pq.CopyInSchema("public", db.DreTable,
+		stmt, errPrepare = txn.Prepare(pq.CopyInSchema("public", lib.DreTable,
 			"message_id",
 			"policy",
 			"subdomain_policy",

@@ -7,8 +7,6 @@ import (
 	"sort"
 	"strings"
 	"time"
-
-	db "github.com/fraudmarc/fraudmarc-ce/database"
 )
 
 func GetDmarcReportGeneral(startdate, endate, domain string) getSummaryReturn {
@@ -90,7 +88,7 @@ GROUP BY source_ip, esp, domain_name, reverse_lookup,
 
 	qargs := []interface{}{domain, start, end}
 
-	rows, errQuery := db.DB.Query(qsql, qargs...)
+	rows, errQuery := DB.Query(qsql, qargs...)
 	defer rows.Close()
 
 	if errQuery != nil {

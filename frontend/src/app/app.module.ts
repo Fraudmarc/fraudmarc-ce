@@ -43,7 +43,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 
 import { MediaChangeService } from './services/media-change.service';
-import { DashWhenEmptyStringPipe, DmarcService} from './services/dmarc.service';
+import { DashWhenEmptyStringPipe, DmarcService } from './services/dmarc.service';
 
 import { PageHeaderComponent } from './components/page-header/page-header.component';
 import { SearchboxComponent } from './components/searchbox/searchbox.component';
@@ -52,6 +52,17 @@ import { LineChartComponent } from './components/line-chart/line-chart.component
 import { ReportComponent } from './components/report/report.component';
 import { DetailComponent } from './components/detail/detail.component';
 import { ProgressPanelComponent } from './components/progress-panel/progress-panel.component';
+import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
+import { Amplify, type ResourcesConfig } from 'aws-amplify';
+import { environment } from '../environments/environment';
+
+const authConfig: ResourcesConfig['Auth'] = {
+    Cognito: environment.Cognito
+};
+
+Amplify.configure({
+    Auth: authConfig
+});
 
 @NgModule({
     declarations: [
@@ -105,7 +116,8 @@ import { ProgressPanelComponent } from './components/progress-panel/progress-pan
         ReactiveFormsModule,
         NgxChartsModule,
         NgxDatatableModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
+        AmplifyAuthenticatorModule,
     ],
     providers: [
         MediaChangeService,

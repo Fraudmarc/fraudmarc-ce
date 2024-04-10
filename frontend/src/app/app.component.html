@@ -1,11 +1,23 @@
-<app-header>
-</app-header>
-<div class="container">
-  <div class="content mat-typography"
-       ngClass.sm="small"
-       ngClass.xs="xsmall">
-    <router-outlet></router-outlet>
-  </div>
-</div>
+<amplify-authenticator>
+  <ng-template amplifySlot="authenticated" let-user="user" let-signOut="signOut">
+    <!-- <h1>Welcome {{ user.username }}!</h1> -->
+    <!-- <button (click)="signOut()">Sign Out</button> -->
+    <app-header>
+    </app-header>
+    <div class="container">
+      <div class="content mat-typography" ngClass.sm="small" ngClass.xs="xsmall">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+
+    <button (click)="signOut()">Sign Out</button>
+  </ng-template>
+</amplify-authenticator>
 
 <app-footer></app-footer>
+<!-- <amplify-authenticator>
+  <ng-template amplifySlot="authenticated" let-user="user" let-signOut="signOut">
+    <h1>Welcome {{ user.username }}!</h1>
+    <button (click)="signOut()">Sign Out</button>
+  </ng-template>
+</amplify-authenticator> -->

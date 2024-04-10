@@ -1,7 +1,7 @@
 {
-  "name": "fraudmarc-ce",
-  "version": "1.0.1",
-  "license": "MIT",
+  "name": "fraudmarc-ce-frontend",
+  "version": "2.0.0",
+  "license": "Apache-2.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -23,8 +23,11 @@
     "@angular/platform-browser": "^16.2.12",
     "@angular/platform-browser-dynamic": "^16.2.12",
     "@angular/router": "^16.2.12",
+    "@aws-amplify/ui-angular": "5.x",
+    "@fontsource/inter": "^5.0.17",
     "@swimlane/ngx-charts": "^20",
     "@swimlane/ngx-datatable": "^20",
+    "aws-amplify": "6.x",
     "core-js": "^2.6",
     "rxjs": "^6.5",
     "tslib": "^2.0.0",

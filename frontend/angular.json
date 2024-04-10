@@ -30,7 +30,8 @@
             "styles": [
               "src/styles.css",
               "src/theme.scss",
-              "src/flags.min.css"
+              "src/flags.min.css",
+              "node_modules/@aws-amplify/ui-angular/theme.css"
             ],
             "vendorChunk": true,
             "extractLicenses": false,

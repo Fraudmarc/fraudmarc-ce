@@ -1,26 +1,26 @@
-import {
+import { 
+  ChangeDetectionStrategy,
   Component,
+  ContentChild,
+  EventEmitter,
+  HostListener,
   Input,
   Output,
-  EventEmitter,
-  ViewEncapsulation,
-  HostListener,
-  ChangeDetectionStrategy,
-  ContentChild,
-  TemplateRef
+  TemplateRef,
+  ViewEncapsulation
 } from '@angular/core';
 import {
-  trigger,
-  style,
   animate,
-  transition
+  style,
+  transition,
+  trigger,
 } from '@angular/animations';
 import { scaleLinear, scaleTime, scalePoint } from 'd3-scale';
 import { curveLinear } from 'd3-shape';
 
-import { calculateViewDimensions, ViewDimensions, ColorHelper, BaseChartComponent } from '@swimlane/ngx-charts/release/common';
-import { getUniqueXDomainValues } from '@swimlane/ngx-charts/release/common/domain.helper'
-import { id } from '@swimlane/ngx-charts/release/utils';
+import { calculateViewDimensions, ViewDimensions, ColorHelper, BaseChartComponent } from '@swimlane/ngx-charts';
+import { getUniqueXDomainValues } from '@swimlane/ngx-charts';
+import { id, ScaleType } from '@swimlane/ngx-charts';
 
 @Component({
   selector: 'line-chart',
@@ -57,7 +57,7 @@ export class LineChartComponent extends BaseChartComponent {
   @Input() showGridLines: boolean = true;
   @Input() curve: any = curveLinear;
   @Input() activeEntries: any[] = [];
-  @Input() schemeType: string;
+  @Input() schemeType: ScaleType;
   @Input() rangeFillOpacity: number;
   @Input() xAxisTickFormatting: any;
   @Input() yAxisTickFormatting: any;

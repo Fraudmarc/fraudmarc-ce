@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { EventEmitter, Injectable, Pipe, PipeTransform } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { MatTableDataSource } from '@angular/material';
+import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
+import { fetchAuthSession } from "aws-amplify/auth";
 
 export class DomainDmarcDataProvider {
   public onData = new EventEmitter<void>();
@@ -122,68 +123,115 @@ export class DmarcService {
     private http: HttpClient
   ) { }
 
+  // https://docs.amplify.aws/angular/build-a-backend/auth/manage-user-session/
+  async currentSession() {
+    try {
+      const { accessToken, idToken } = (await fetchAuthSession()).tokens ?? {};
+      console.log('accessToken', accessToken);
+      return accessToken;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async getAuthHeaders() {
+    const token = await this.currentSession();
+    if (token) {
+      return {
+        headers: new HttpHeaders({
+          'Authorization': `Bearer ${token}`
+        })
+      };
+    }
+    return {};
+  }
 
   getChartData(domain: string, startDate: ISODateString, endDate: ISODateString): Observable<IDmarcChart> {
     const data = new Subject<IDmarcChart>();
-    this.http
-      .get(`${environment.apiBaseUrl}/domains/${domain}/chart/dmarc`, { params: { start: startDate, end: endDate } })
-      .subscribe(
-        (response: any) => {
-          this.ChartDmarcResponse = response;
-    for (let j = 0; j < this.ChartDmarcResponse.chartdata[0].series.length; j++) {
-      this.ChartDmarcResponse.chartdata[0].series[j].name = new Date(this.ChartDmarcResponse.chartdata[0].series[j].name);
-      this.ChartDmarcResponse.chartdata[1].series[j].name = new Date(this.ChartDmarcResponse.chartdata[1].series[j].name);
-    }
-    data.next(this.ChartDmarcResponse);
-      }, err => console.log(err)
-    );
+    this.getAuthHeaders().then(headers => {
+      this.http
+        .get(`${environment.apiBaseUrl}/domains/${domain}/chart/dmarc`, {
+          params: { start: startDate, end: endDate },
+          ...headers
+        })
+        .subscribe(
+          (response: any) => {
+            this.ChartDmarcResponse = response;
+            for (let j = 0; j < this.ChartDmarcResponse.chartdata[0].series.length; j++) {
+              this.ChartDmarcResponse.chartdata[0].series[j].name = new Date(this.ChartDmarcResponse.chartdata[0].series[j].name);
+              this.ChartDmarcResponse.chartdata[1].series[j].name = new Date(this.ChartDmarcResponse.chartdata[1].series[j].name);
+            }
+            data.next(this.ChartDmarcResponse);
+          }, err => console.log(err)
+        );
+    });
     return data.asObservable();
   }
 
   getDomainList() {
-    return this.http.get(`${environment.apiBaseUrl}/domains/`);
+    const data = new Subject<any>(); // Use the appropriate type instead of any if available
+    this.getAuthHeaders().then(headers => {
+      this.http.get(`${environment.apiBaseUrl}/domains/`, { ...headers })
+        .subscribe(
+          (response: any) => {
+            data.next(response); // Process the response as needed
+          },
+          err => {
+            console.log(err);
+            data.error(err); // Handle the error
+          }
+        );
+    });
+    return data.asObservable();
   }
 
   getSummaryDataProvider(domain: string, startDate: ISODateString, endDate: ISODateString) {
     const dataProvider = new DomainDmarcDataProvider(domain, startDate, endDate);
-    this.http
-      .get(`${environment.apiBaseUrl}/domains/${domain}/report`, { params: { start: startDate, end: endDate } })
-      .subscribe(
-        (data: IDMARCReportResponse) => {
-          if (data.errorMessage) { dataProvider.onError.emit(data.errorMessage); }
-          dataProvider.totalDataSource.data = [data.domain_summary_counts];
-          dataProvider.summaryDataSource.data = data.summary;
-          dataProvider.domain = data.domain;
-        },
-        err => dataProvider.onError.emit('There was a problem processing this request'),
-        () => dataProvider.onData.emit()
-      );
+    this.getAuthHeaders().then(headers => {
+      this.http
+        .get(`${environment.apiBaseUrl}/domains/${domain}/report`, {
+          params: { start: startDate, end: endDate },
+          ...headers
+        })
+        .subscribe(
+          (data: IDMARCReportResponse) => {
+            if (data.errorMessage) { dataProvider.onError.emit(data.errorMessage); }
+            dataProvider.totalDataSource.data = [data.domain_summary_counts];
+            dataProvider.summaryDataSource.data = data.summary;
+            dataProvider.domain = data.domain;
+          },
+          err => dataProvider.onError.emit('There was a problem processing this request'),
+          () => dataProvider.onData.emit()
+        );
+    });
     return dataProvider;
   }
 
   getDetailDataProvider(domainNav: string, domain: string, startDate: ISODateString, endDate: ISODateString, source: string, source_type: string) {
     const dataProvider = new DomainDmarcDetailDataProvider(domain, startDate, endDate, source);
-    this.http
-      .get(
-        `${environment.apiBaseUrl}/domains/${domainNav}/report/detail`,
-        {
+    this.getAuthHeaders().then(headers => {
+      this.http
+        .get(`${environment.apiBaseUrl}/domains/${domainNav}/report/detail`, {
           params: {
             source: source,
             source_type: source_type,
             start: startDate,
             end: endDate
-          }
+          },
+          ...headers
         })
-      .subscribe(
-        (data: any) => {
-          if (data.errorMessage) { dataProvider.onError.emit(data.errorMessage); }
-          dataProvider.DetailDataSource.data = data.detail_rows;
-        },
-        err => {
-          dataProvider.onError.emit('There was a problem processing this request');
-        },
-        () => dataProvider.onData.emit()
-      );
+        .subscribe(
+          (data: any) => {
+            if (data.errorMessage) { dataProvider.onError.emit(data.errorMessage); }
+            dataProvider.DetailDataSource.data = data.detail_rows;
+          },
+          err => {
+            dataProvider.onError.emit('There was a problem processing this request');
+          },
+          () => dataProvider.onData.emit()
+        );
+    });
     return dataProvider;
   }
 }

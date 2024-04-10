@@ -1,12 +1,16 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
 
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/awslabs/aws-lambda-go-api-proxy/gorillamux"
+
 	"github.com/fraudmarc/fraudmarc-ce/backend/lib"
-	db "github.com/fraudmarc/fraudmarc-ce/database"
 	"github.com/gorilla/mux"
 )
 
@@ -29,24 +33,30 @@ type query struct {
 type getDetailReturn struct {
 	DetailRows []lib.DmarcReportingForwarded `json:"detail_rows"`
 }
+
 type result []interface{}
 
-func main() {
-	var reports []lib.AggregateReport
-	err := db.DBreporting.SQL(`
-		select * from "AggregateReport"`).QueryStructs(&reports)
-	if err != nil {
-		log.Fatal(err)
-	}
+var muxLambda *gorillamux.GorillaMuxAdapterV2
+
+func init() {
 	r := mux.NewRouter()
+
+	// Define your routes here
 	r.HandleFunc("/api/domains/", handleDomainList)
 	r.HandleFunc("/api/domains/{domain}/report", handleDomainSummary)
 	r.HandleFunc("/api/domains/{domain}/report/detail", handleDmarcDetail)
 	r.HandleFunc("/api/domains/{domain}/chart/dmarc", handleDmarcChart)
-	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("/dist"))))
-	if err = http.ListenAndServe(":7489", r); err != nil {
-		log.Fatal(err)
-	}
+
+	muxLambda = gorillamux.NewV2(r)
+}
+
+func HandleRequest(ctx context.Context, req events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
+	// Pass the request directly to the muxLambda handler
+	return muxLambda.ProxyWithContext(ctx, req)
+}
+
+func main() {
+	lambda.Start(HandleRequest)
 }
 
 func handleDomainList(w http.ResponseWriter, r *http.Request) {

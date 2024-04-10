@@ -6,11 +6,9 @@ import (
 	"log"
 	"net"
 	"time"
-
-	db "github.com/fraudmarc/fraudmarc-ce/database"
 )
 
-//GetDmarcReportDetail returns the dmarc report details used to be shown on detail panel
+// GetDmarcReportDetail returns the dmarc report details used to be shown on detail panel
 func GetDmarcReportDetail(startdate, endate, domain, source, sourcetype string) []DmarcReportingForwarded {
 
 	t := time.Now()
@@ -109,7 +107,7 @@ AND dre.end_date <= $3
 
 	qsql = fmt.Sprintf("%s%s ORDER BY count DESC", qsql, groupTerm)
 
-	rows, errQuery := db.DB.Query(qsql, qargs...)
+	rows, errQuery := DB.Query(qsql, qargs...)
 	defer rows.Close()
 
 	if errQuery != nil {

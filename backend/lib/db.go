@@ -1,4 +1,4 @@
-package database
+package lib
 
 import (
 	"database/sql"
@@ -14,8 +14,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-sdk-go/service/sns"
-	dat "gopkg.in/mgutz/dat.v1"
-	runner "gopkg.in/mgutz/dat.v1/sqlx-runner"
+	"github.com/mgutz/dat/dat"
+	runner "github.com/mgutz/dat/sqlx-runner"
 )
 
 type DBConnectInfo struct {
@@ -32,10 +32,6 @@ type DBHandle struct {
 	defaultIdle        int
 	defaultConnections int
 }
-
-const (
-	fmRegionUSEastOne = "us-east-1"
-)
 
 var (
 	DB       *sql.DB
@@ -63,8 +59,8 @@ var (
 	SvcSNS       *sns.SNS
 	SvcLambda    *lambda.Lambda
 
-	SnsRegion    = fmRegionUSEastOne
-	LambdaRegion = fmRegionUSEastOne
+	SnsRegion    = os.Getenv("AWS_REGION")
+	LambdaRegion = os.Getenv("AWS_REGION")
 	DreTable     = "dmarc_reporting_entries"
 	RecordChunk  = 10000
 	AwsConfig    = aws.Config{

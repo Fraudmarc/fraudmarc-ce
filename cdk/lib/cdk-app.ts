@@ -275,6 +275,20 @@ export class AppCdkStack extends cdk.Stack {
         },
         defaultRootObject: 'index.html',
         domainNames: [props.fullDomain],
+        errorResponses: [
+          {
+            httpStatus: 403, // Access Denied
+            responseHttpStatus: 200,
+            responsePagePath: '/index.html',
+            ttl: cdk.Duration.seconds(300),
+          },
+          {
+            httpStatus: 404, // Not Found
+            responseHttpStatus: 200,
+            responsePagePath: '/index.html',
+            ttl: cdk.Duration.seconds(300),
+          },
+        ],
       });
 
     // Create DNS records for the CloudFront distribution using Route53

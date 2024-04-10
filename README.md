@@ -1,4 +1,4 @@
-![Fraudmarc CE Logo](https://github.com/Fraudmarc/fraudmarc-ce/blob/c218eb09aa8a7f15d6a5b3e5c17b843ab1936d84/25Fraudmarc-CE-Logo-on-Light.png?raw=true)
+![Fraudmarc CE Logo](https://github.com/Fraudmarc/fraudmarc-ce/blob/master/25Fraudmarc-CE-Logo-on-Light.png)
 
 # Fraudmarc Community Edition (CE)
 

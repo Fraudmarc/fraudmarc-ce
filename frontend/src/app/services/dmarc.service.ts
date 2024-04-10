@@ -20,18 +20,6 @@ export class DomainDmarcDataProvider {
   }
 }
 
-// https://docs.amplify.aws/angular/build-a-backend/auth/manage-user-session/
-// async function currentSession() {
-//   try {
-//     const { accessToken, idToken } = (await fetchAuthSession()).tokens ?? {};
-//     console.log('accessToken', accessToken);
-//     return accessToken;
-//   } catch (err) {
-//     console.log(err);
-//     return null;
-//   }
-// }
-
 export class DomainDmarcDetailDataProvider {
   public onData = new EventEmitter<void>();
   public onError = new EventEmitter<string>();

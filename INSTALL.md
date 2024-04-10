@@ -65,10 +65,9 @@ Open `frontend/app/src/environments/environment.common.ts` in a text editor and 
 
 ### Step 5: Build Frontend
 
-While DNS changes are propagating, proceed to build the frontend application:
+While DNS changes are propagating, switch to the `frontend` directory and proceed to build the frontend application:
 
 ```sh
-cd ../frontend
 npx yarn
 npx @angular/cli@16 build --configuration=production
 ```

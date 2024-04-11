@@ -1,10 +1,10 @@
 module github.com/fraudmarc/fraudmarc-ce/backend
 
-go 1.22.1
+go 1.22.2
 
 require (
 	github.com/aws/aws-lambda-go v1.46.0
-	github.com/aws/aws-sdk-go v1.51.18
+	github.com/aws/aws-sdk-go v1.51.19
 	github.com/awslabs/aws-lambda-go-api-proxy v0.16.1
 	github.com/gorilla/mux v1.8.1
 	github.com/lib/pq v1.10.9

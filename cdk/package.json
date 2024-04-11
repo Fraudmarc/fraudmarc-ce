@@ -23,6 +23,7 @@
   "dependencies": {
     "@aws-cdk/aws-lambda-go-alpha": "^2.136.0-alpha.0",
     "aws-cdk-lib": "^2.136.0",
+    "cdk-nat-asg-provider": "^0.0.5",
     "constructs": "^10.0.0",
     "source-map-support": "^0.5.21"
   }

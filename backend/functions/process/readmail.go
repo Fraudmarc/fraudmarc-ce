@@ -290,7 +290,7 @@ func ParseDmarcReportBulk(messageID string, firstRecord int) {
 
 	// spin this off as separate lambda:
 	invokeInput := lambda.InvokeInput{
-		FunctionName:   aws.String(arnLambdaDmarcARResolveBulk),
+		FunctionName:   aws.String(os.Getenv("AWS_LAMBDA_FUNCTION_NAME")),
 		InvocationType: aws.String("Event"),
 		Payload:        buf,
 	}
@@ -519,9 +519,7 @@ func SenderbaseIPData(sip string) (sbGeo lib.SBGeo, err error) {
 	domain := fmt.Sprintf("%s.query.senderbase.org", srevip.String)
 
 	// perform the lookup:
-	log.Println("SB:  lookupTXT  ", sip)
 	txtRecords, errLookupTXT := net.LookupTXT(domain)
-	log.Println("SB:  lookupTXT2  ", sip)
 	if errLookupTXT != nil {
 		err = fmt.Errorf("SBIPD - errLookupTXT:  %s\n%s", domain, errLookupTXT)
 		log.Println(err)
@@ -534,7 +532,6 @@ func SenderbaseIPData(sip string) (sbGeo lib.SBGeo, err error) {
 	}
 
 	rr := txtRecords[0]
-	log.Println("SB:  TXT proc  ", rr)
 
 	// handle multiple TXT records:
 	sbStr := rr
@@ -554,7 +551,6 @@ func SenderbaseIPData(sip string) (sbGeo lib.SBGeo, err error) {
 		sbMap[sbm[0]] = sbm[1]
 	}
 
-	log.Println("SB:  struct  ", sip)
 	sbGeo.OrgName = sbMap["1"]
 	sbGeo.OrgID = sbMap["4"]
 	sbGeo.OrgCategory = sbMap["5"]
@@ -585,7 +581,6 @@ func byteReverseIP4(ip net.IP) (revip revIP4) {
 
 func writeToDmarcReportingFull(dr lib.DmarcReportingFull, txn *sql.Tx, ctx *DmarcARRContext) {
 
-	log.Println("writeToDmarcReportingFull - start", dr.SourceIP)
 	var stmt *sql.Stmt
 	var errPrepare error
 
@@ -697,6 +692,5 @@ func writeToDmarcReportingFull(dr lib.DmarcReportingFull, txn *sql.Tx, ctx *Dmar
 			return
 		}
 	}
-	log.Println("writeToDmarcReportingFull - end", dr.SourceIP)
 
 } // writeToDmarcReportingFull

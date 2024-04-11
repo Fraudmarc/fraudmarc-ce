@@ -225,13 +225,8 @@ func parse(r io.Reader, messageId string) {
 	fb.DateRangeBegin = int64(timestamp1)
 	timestamp2, _ := strconv.Atoi(strings.TrimSpace(fb.RawDateRangeEnd))
 	fb.DateRangeEnd = int64(timestamp2)
-	fmt.Fprintf(os.Stderr, "Report from: %s\n begin: %d\n end: %d\n", fb.Email, fb.DateRangeBegin, fb.DateRangeEnd)
 
 	fb.MessageId = messageId
-
-	fmt.Fprintf(os.Stderr, "Record count: %10d\n", len(fb.Records))
-	log.Println("domain   : ", fb.Domain)
-	log.Println("messageId: ", messageId)
 
 	txnAR, _ := lib.DB.Begin()
 	txnARR, _ := lib.DB.Begin()
@@ -239,17 +234,12 @@ func parse(r io.Reader, messageId string) {
 	txnSPF, _ := lib.DB.Begin()
 	txnPO, _ := lib.DB.Begin()
 
-	fmt.Fprintln(os.Stderr, "parsed, starting DB transfer...")
-
-	fmt.Fprintf(os.Stderr, "creating listeners...")
 	wg.Add(5)
 	go writeToAggregateReport(chanAggregateReport, &wg, txnAR)
 	go writeToAggregateReportRecord(chanAggregateReportRecord, &wg, txnARR)
 	go writeToDkimAuthResult(chanDkimAuthResult, &wg, txnDKIM)
 	go writeToSpfAuthResult(chanSpfAuthResult, &wg, txnSPF)
 	go writeToPoReason(chanPoReason, &wg, txnPO)
-
-	fmt.Fprintf(os.Stderr, "done.\n")
 
 	chanAggregateReport <- *fb
 
@@ -273,26 +263,22 @@ func parse(r io.Reader, messageId string) {
 		// Push the data into this COPY batch
 		chanAggregateReportRecord <- rec
 
-		log.Println("rec: ", num, rec)
 		for _, dkim := range rec.AuthDKIM {
 			dkim.AggregateReport_id = rec.AggregateReport_id
 			dkim.RecordNumber = rec.RecordNumber
 			chanDkimAuthResult <- dkim
-			log.Println("dkim: ", dkim)
 		}
 
 		for _, spf := range rec.AuthSPF {
 			spf.AggregateReport_id = rec.AggregateReport_id
 			spf.RecordNumber = rec.RecordNumber
 			chanSpfAuthResult <- spf
-			log.Println("spf: ", spf)
 		}
 
 		for _, reason := range rec.POReason {
 			reason.AggregateReport_id = rec.AggregateReport_id
 			reason.RecordNumber = rec.RecordNumber
 			chanPoReason <- reason
-			log.Println("po: ", reason)
 		}
 
 	}

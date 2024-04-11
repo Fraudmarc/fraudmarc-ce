@@ -952,6 +952,11 @@ case@1.6.3:
   resolved "https://registry.yarnpkg.com/case/-/case-1.6.3.tgz#0a4386e3e9825351ca2e6216c60467ff5f1ea1c9"
   integrity sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==
 
+cdk-nat-asg-provider@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/cdk-nat-asg-provider/-/cdk-nat-asg-provider-0.0.5.tgz#6f8292389a044976a49de995ade42c1ed147ca47"
+  integrity sha512-YHSUnO2F8I4Vk/HQxGCYN9ILbN7fiXpbFqPnlNg3m6s4mdnI0fnPTvXaNYiCN2uzVVdEmTKkN29SspIhDSWBIA==
+
 chalk@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"

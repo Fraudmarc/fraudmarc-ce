@@ -1,6 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { custom_resources as customResources } from 'aws-cdk-lib';
+import { NatAsgProvider } from 'cdk-nat-asg-provider';
+
 
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as lambdaGo from '@aws-cdk/aws-lambda-go-alpha';
@@ -34,6 +36,9 @@ export class AppCdkStack extends cdk.Stack {
     const vpc = new cdk.aws_ec2.Vpc(this, 'VPC', {
       maxAzs: 2,
       natGateways: 1,
+      natGatewayProvider: new NatAsgProvider({
+        instanceType: new cdk.aws_ec2.InstanceType('t3.micro'),
+      }),
     });
 
     // create s3 bucket to receive mail
@@ -50,15 +55,13 @@ export class AppCdkStack extends cdk.Stack {
       'DbInstance',
       {
         allocatedStorage: 20,
-        backupRetention: cdk.Duration.days(0),
+        backupRetention: cdk.Duration.days(1),
         deleteAutomatedBackups: true,
         databaseName: DATABASE_NAME,
         engine: cdk.aws_rds.DatabaseInstanceEngine.postgres({
           version: cdk.aws_rds.PostgresEngineVersion.VER_16,
         }),
-        instanceType: cdk.aws_ec2.InstanceType.of(
-          cdk.aws_ec2.InstanceClass.BURSTABLE4_GRAVITON,
-          cdk.aws_ec2.InstanceSize.MICRO),
+        instanceType: new cdk.aws_ec2.InstanceType('t4g.micro'),
         maxAllocatedStorage: 100,
         removalPolicy: cdk.RemovalPolicy.DESTROY,
         storageEncrypted: true,

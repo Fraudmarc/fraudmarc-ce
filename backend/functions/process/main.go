@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -98,7 +97,7 @@ func main() {
 
 		if recordStop != len(fb.Records) {
 			//Recursively call ourselves if there is more work to be done!
-			log.Println("Recursively calling again for ", q.Params.MessageID)
+			fmt.Println("Recursively calling again for ", q.Params.MessageID)
 			ParseDmarcReportBulk(q.Params.MessageID, recordStop)
 		}
 

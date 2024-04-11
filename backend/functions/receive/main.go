@@ -113,7 +113,6 @@ func main() {
 		parse(m, object_key)
 
 		spf.Description = "dummy struct is used"
-		log.Println("object_key:  ", object_key)
 
 		return spf, nil
 	})

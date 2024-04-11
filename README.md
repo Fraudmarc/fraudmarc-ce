@@ -24,10 +24,29 @@ Fraudmarc CE v2 offers a secure, scalable system to analyze DMARC aggregate repo
 
 Dive into DMARC data with ease:
 
-1. **Setup Made Simple:** Our serverless architecture on AWS and AWS GovCloud means you focus on insights, not infrastructure.
-2. **Secure & Scalable:** From receiving DMARC reports with AWS SES to processing them with Lambda functions, your data and infrastructure is secure and scalable.
+1. **Setup Made Simple:** Our serverless architecture on AWS and AWS GovCloud means you focus on insights, not infrastructure. Installation typically takes minimal effort - just edit a file, add a subdomain to your DNS, run a few commands, and wait about 15 minutes for the deployment to complete.
+2. **Secure & Scalable:** From receiving DMARC reports with AWS SES to processing them with Lambda functions, your data and infrastructure is secure and scalable. The web app is secured by AWS Cognito, providing robust user authentication and authorization. API Gateway's fully-managed Cognito authorizer guards the backend, ensuring only authenticated users can access your data.
 
 See our [Installation Guide](INSTALL.md) for step-by-step installation instructions.
+
+## Costs
+
+Fraudmarc CE is designed to be cost-effective, leveraging AWS services with generous free tiers. A typical monthly cost breakdown is as follows:
+
+- API Gateway: $0.00
+- CloudFront: $0.00
+- Cognito: $0.00
+- EC2: $0.00
+- IP addresses: $3.75
+- Lambda: $0.00
+- RDS: $0.00
+- RDS Backup: $0.00
+- Route 53: $0.50
+- Secrets Manager: $0.40
+- SES: $0.00
+- S3: $0.00
+
+In most cases, you can expect to pay under $5 per month for the raw cloud resources directly from AWS, ensuring cost-efficiency even at scale.
 
 ## What's New in v2?
 

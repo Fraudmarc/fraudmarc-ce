@@ -105,7 +105,7 @@ AND dre.end_date <= $3
 %s
 `, selectTerm, from, qterm)
 
-	qsql = fmt.Sprintf("%s%s ORDER BY count DESC", qsql, groupTerm)
+	qsql = fmt.Sprintf("%s%s ORDER BY count DESC LIMIT %d", qsql, groupTerm, MAX_ROWS)
 
 	rows, errQuery := DB.Query(qsql, qargs...)
 	defer rows.Close()

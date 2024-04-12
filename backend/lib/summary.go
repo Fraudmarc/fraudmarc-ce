@@ -173,7 +173,7 @@ GROUP BY source_ip, esp, domain_name, reverse_lookup,
 	}
 
 	// sort in descending order by volume:
-	sort.Sort(sort.Reverse(DmarcReportingSummaryList(results))) // don't fuck with this
+	sort.Sort(sort.Reverse(DmarcReportingSummaryList(results))) // don't touch ¯\_(ツ)_/¯
 
 	// build json:
 

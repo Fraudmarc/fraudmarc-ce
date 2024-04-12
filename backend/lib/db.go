@@ -75,6 +75,8 @@ var (
 	}
 )
 
+const MAX_ROWS = 2500
+
 func init() {
 	// create a normal database connection through database/sql
 	var err error

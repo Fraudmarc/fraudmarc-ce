@@ -50,6 +50,36 @@ export class AppCdkStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
+    // Explicit bucket policy to avoid SES race condition
+    const bucketPolicy = new cdk.aws_s3.CfnBucketPolicy(this, 'S3PolicyForSES', {
+      bucket: rxBucket.bucketName,
+      policyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Principal: { Service: 'ses.amazonaws.com' },
+            Action: [
+              's3:PutObject',
+              's3:GetBucketLocation',
+              's3:ListBucket',
+              's3:GetObject',
+              's3:AbortMultipartUpload',
+            ],
+            Resource: [
+              rxBucket.bucketArn,
+              `${rxBucket.bucketArn}/*`,
+            ],
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': this.account,
+              },
+            },
+          },
+        ],
+      },
+    });
+
     // create pgsql db
     const databaseInstance = new cdk.aws_rds.DatabaseInstance(this,
       'DbInstance',
@@ -200,15 +230,8 @@ export class AppCdkStack extends cdk.Stack {
     // set ses to receive mail
     const ruleSet = new cdk.aws_ses.ReceiptRuleSet(this, 'Fraudmarc CE RuleSet');
 
-    // Construct the ReceiptRuleSet ARN
-    const receiptRuleSetArn = this.formatArn({
-      account: this.account,
-      region: '', // SES ARN does not require a region; leave this empty
-      resource: `receipt-rule-set/${ruleSet.receiptRuleSetName}`,
-      service: 'ses',
-    });
-
-    new cdk.aws_ses.ReceiptRule(this, 'Fraudmarc-CE-Rule', {
+    // Create a new receipt rule for the rule set
+    const rule = new cdk.aws_ses.ReceiptRule(this, 'Fraudmarc-CE-Rule', {
       actions: [
         // Action to store the email in S3
         new cdk.aws_ses_actions.S3({
@@ -225,6 +248,10 @@ export class AppCdkStack extends cdk.Stack {
       recipients: [`${EMAIL}@${props.fullDomain}`],
       ruleSet,
     });
+
+    // Force the S3 policy to be created before the rule
+    const cfnRule = rule.node.defaultChild as cdk.aws_ses.CfnReceiptRule;
+    cfnRule.addDependency(bucketPolicy);
 
     // Grant SES permission to invoke the Lambda function
     receiveLambda.addPermission('AllowSESInvocation', {

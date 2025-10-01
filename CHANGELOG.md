@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.1.0] - 2025-09-30
+### Changed
+- Upgraded AWS CDK from v2.136.0 to v2.218.0
+- Upgraded PostgreSQL RDS engine from version 16 to version 17
+- Migrated CloudFront S3 origin to use Origin Access Control (OAC) for improved security
+- Changed RDS storage type from GP2 to GP3 for better performance and cost efficiency
+- Added `allowMajorVersionUpgrade` flag to RDS instance configuration
+- Updated dependency lockfile with latest package versions
+
+### Added
+- Added `cdk.context.json` to `.gitignore` to prevent CDK context from being committed
+
 ## [2.0.0] - 2024-04-10
 ### Added
 - Multi-User Support through AWS Cognito for secure and easy collaboration.

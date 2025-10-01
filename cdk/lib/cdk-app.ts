@@ -55,17 +55,18 @@ export class AppCdkStack extends cdk.Stack {
       'DbInstance',
       {
         allocatedStorage: 20,
+        allowMajorVersionUpgrade: true,
         backupRetention: cdk.Duration.days(1),
         deleteAutomatedBackups: true,
         databaseName: DATABASE_NAME,
         engine: cdk.aws_rds.DatabaseInstanceEngine.postgres({
-          version: cdk.aws_rds.PostgresEngineVersion.VER_16,
+          version: cdk.aws_rds.PostgresEngineVersion.VER_17,
         }),
         instanceType: new cdk.aws_ec2.InstanceType('t4g.micro'),
         maxAllocatedStorage: 100,
         removalPolicy: cdk.RemovalPolicy.DESTROY,
         storageEncrypted: true,
-        storageType: cdk.aws_rds.StorageType.GP2,
+        storageType: cdk.aws_rds.StorageType.GP3,
         vpc,
         vpcSubnets: {
           subnetType: cdk.aws_ec2.SubnetType.PRIVATE_WITH_EGRESS,
@@ -273,7 +274,7 @@ export class AppCdkStack extends cdk.Stack {
       {
         certificate: props.certificate,
         defaultBehavior: {
-          origin: new cdk.aws_cloudfront_origins.S3Origin(frontendBucket),
+          origin: cdk.aws_cloudfront_origins.S3BucketOrigin.withOriginAccessControl(frontendBucket),
           viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.HTTPS_ONLY,
         },
         defaultRootObject: 'index.html',
